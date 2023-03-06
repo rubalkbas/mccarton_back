@@ -42,10 +42,9 @@ public class CarroComprasEntity implements Serializable{
 	private ClienteEntity cliente;
 	
 	
-/*
- * ID_PRODUCTO
+
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "ID_CLIENTE" , nullable = true)
+	@JoinColumn(name = "ID_PRODUCTO" , nullable = true)
 	@JsonManagedReference
-	private ClienteEntity cliente;*/
+	private ProductosEntity producto;
 }

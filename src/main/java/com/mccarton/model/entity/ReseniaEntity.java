@@ -50,11 +50,9 @@ public class ReseniaEntity implements Serializable{
 	@JsonManagedReference
 	private ClienteEntity cliente;
 	
-	/*
-	 * ID_PRODUCTO
-		@ManyToOne(optional = false)
-		@JoinColumn(name = "ID_CLIENTE" , nullable = true)
-		@JsonManagedReference
-		private ClienteEntity cliente;*/
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "ID_PRODUCTO" , nullable = true)
+	@JsonManagedReference
+	private ProductosEntity producto;
 
 }
