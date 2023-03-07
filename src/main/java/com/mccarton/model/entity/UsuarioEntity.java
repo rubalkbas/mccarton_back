@@ -54,8 +54,8 @@ public class UsuarioEntity implements Serializable{
 	private Integer estatus;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "ID_ROL" , nullable = true)
-	@JsonManagedReference
+	@JoinColumn(name = "ID_ROL"	)
+	//@JsonManagedReference
 	private RolEntity rol;
 	
 	
