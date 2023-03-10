@@ -14,7 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -99,8 +98,8 @@ public class ProductosEntity implements Serializable {
 	private MaterialesEntity material;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "ID_COLOR")
-	//@JsonManagedReference
+	@JoinColumn(name = "ID_COLOR", nullable = false)
+	@JsonManagedReference
 	private ColoresEntity color;
 	
 	@ManyToOne(optional = false)
