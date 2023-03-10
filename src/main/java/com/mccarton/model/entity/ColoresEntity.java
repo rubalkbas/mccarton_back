@@ -41,7 +41,7 @@ public class ColoresEntity implements Serializable {
 	private String nombreColor;
 	
 	@Column(name = "ESTATUS", nullable = false, length = 1)
-	private Integer estatusColor;
+	private Integer estatus;
 	
 	/**
 	 * Relación Uno a Muchos
