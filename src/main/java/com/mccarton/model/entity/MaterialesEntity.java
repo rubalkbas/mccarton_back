@@ -42,13 +42,13 @@ public class MaterialesEntity implements Serializable {
 	@Column(name = "ESTATUS", nullable = false, length = 1)
 	private Integer estatus;
 	
-	/**
-	 * Relación Uno a Muchos
-	 * Lista de asuntos
-	 * */
-	@OneToMany(mappedBy = "material")
-	@JsonBackReference
-	private List<ProductosEntity> producto;
+//	/**
+//	 * Relación Uno a Muchos
+//	 * Lista de asuntos
+//	 * */
+//	@OneToMany(mappedBy = "material")
+//	@JsonBackReference
+//	private List<ProductosEntity> producto;
 
 
 }
