@@ -99,8 +99,8 @@ public class ProductosEntity implements Serializable {
 	private MaterialesEntity material;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "ID_COLOR" , nullable = true)
-	@JsonManagedReference
+	@JoinColumn(name = "ID_COLOR")
+	//@JsonManagedReference
 	private ColoresEntity color;
 	
 	@ManyToOne(optional = false)
