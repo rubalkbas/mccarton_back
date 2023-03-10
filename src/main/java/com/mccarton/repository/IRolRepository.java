@@ -11,5 +11,6 @@ public interface IRolRepository extends JpaRepository<RolEntity, Integer>{
 	
 	Optional<RolEntity> findByNombreRolIgnoreCase(String nombreRol);
 	List<RolEntity> findByEstatus(Integer estatus);
+	Optional<RolEntity> findByIdRol(Integer id);
 
 }

@@ -1,9 +1,11 @@
 package com.mccarton.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.mccarton.model.entity.UsuarioEntity;
 
 public interface IUsuarioRepository extends JpaRepository<UsuarioEntity, Integer>{
 
+	Optional<UsuarioEntity> findBycorreoElectronicoIgnoreCase(String correo);
 }
