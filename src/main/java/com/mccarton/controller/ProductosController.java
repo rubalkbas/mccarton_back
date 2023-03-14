@@ -1,6 +1,7 @@
 package com.mccarton.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 //import javax.validation.Valid;
 
@@ -27,28 +28,36 @@ import com.mccarton.service.IProductosService;
 public class ProductosController {
 	
 	@Autowired
-	private IProductosService ProductosService;
+	private IProductosService productosService;
 
 	
 	@GetMapping(path = "/todos", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<List<ProductosEntity>>> listarProductos(){
 		SingleResponse<List<ProductosEntity>> response = new SingleResponse<>();
-		response = ProductosService.consultarProductos();
+		response = productosService.consultarProductos();
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 	
 	@PostMapping(path = "/nuevoProducto", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<ProductosEntity>> crearProducto(@RequestBody  ProductosEntity producto){
 		SingleResponse<ProductosEntity> response = new SingleResponse<>();
-		response = ProductosService.crearProductos(producto);
+		response = productosService.crearProductos(producto);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 	
 	@GetMapping(path = "/todosEnStock", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<List<ProductosEntity>>> listarProductosActivos(){
 		SingleResponse<List<ProductosEntity>> response = new SingleResponse<>();
-		response = ProductosService.consultarProductosStock();
+		response = productosService.consultarProductosStock();
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
+	
+	@PostMapping(path = "/detalle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<Optional<ProductosEntity>>> detalleProducto(@RequestBody  ProductosEntity producto){
+		SingleResponse<Optional<ProductosEntity>> response = new SingleResponse<>();
+		response = productosService.detalleProducto(producto);
+		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+	}
+	
 	
 }
