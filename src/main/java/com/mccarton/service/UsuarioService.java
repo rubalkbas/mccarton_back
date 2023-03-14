@@ -74,7 +74,9 @@ public class UsuarioService implements IUsuarioService {
 		if(usuarioO.isPresent()) {
 			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  correo electrónico " + usuario.getCorreoElectronico() +" ya existe en la BD");
 		}
+		usuario.setCorreoElectronico(usuario.getCorreoElectronico().toLowerCase());
 		usuario.setEstatus(1);
+		
 		Optional<RolEntity> rolOp = Optional.empty();
 		try {
 			rolOp = rolRepository.findById(usuario.getRol().getIdRol());
@@ -100,6 +102,83 @@ public class UsuarioService implements IUsuarioService {
 		response.setOk(true);
 		response.setMensaje("Se ha guardado al usuario " + usuario.getNombreUsuario() +" exitosamente.");
 		response.setResponse(usuario);
+		return response;
+	}
+
+
+	@Transactional
+	@Override
+	public SingleResponse<UsuarioEntity> actualizarUsuario(UsuarioEntity usuario) {
+		Optional<UsuarioEntity> oUsuarioDb = Optional.empty();
+		try {
+			oUsuarioDb = usuarioRepository.findById(usuario.getIdUsuario());
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
+		}
+		
+		if(!oUsuarioDb.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  usuario con Id " + usuario.getIdUsuario() +" no existe en la BD");
+		}
+		UsuarioEntity usuarioDb = oUsuarioDb.get();
+		if(usuario.getNombreUsuario()!= null) {
+			usuarioDb.setNombreUsuario(usuario.getNombreUsuario());
+		}
+		if(usuario.getApellidoPaterno()!= null) {
+			usuarioDb.setApellidoPaterno(usuario.getApellidoPaterno());
+		}
+		if(usuario.getApellidoMaterno()!= null) {
+			usuarioDb.setApellidoMaterno(usuario.getApellidoMaterno());
+		}
+		if(usuario.getCorreoElectronico()!= null) {
+			Optional<UsuarioEntity> usuarioO = Optional.empty();
+			try {
+				usuarioO = usuarioRepository.findBycorreoElectronicoIgnoreCase(usuario.getCorreoElectronico());
+			} catch (DataAccessException ex) {
+				log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+						ex.getStackTrace());
+				throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
+			}
+			if(usuarioO.isPresent()) {
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "El  correo electrónico " + usuario.getCorreoElectronico() +" ya existe en la BD");
+			}
+			usuarioDb.setCorreoElectronico(usuario.getCorreoElectronico().toLowerCase());
+		}
+		if(usuario.getEstatus()!= null) {
+			usuarioDb.setEstatus(usuario.getEstatus());
+		}
+		if(usuario.getRol().getIdRol()!= null) {
+			Optional<RolEntity> rolOp = Optional.empty();
+			try {
+				rolOp = rolRepository.findById(usuario.getRol().getIdRol());
+			} catch (DataAccessException ex) {
+				log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+						ex.getStackTrace());
+				throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los roles en la BD");
+			}
+			if(!rolOp.isPresent()) {
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "El  rol con Id " + usuario.getRol().getIdRol() +" no existe en la BD");
+			}
+			usuarioDb.setRol(rolOp.get());
+		}
+		if(usuario.getPassword()!= null) {
+			usuarioDb.setPassword(passwordEncoder.encode(usuario.getPassword()));
+		}
+		if(usuario.getFoto()!= null) {
+			usuarioDb.setFoto(usuario.getFoto());
+		}
+		try {
+			usuarioDb = usuarioRepository.save(usuarioDb);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
+		}
+		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
+		response.setOk(true);
+		response.setMensaje("Se ha actualizado al usuario " + usuarioDb.getNombreUsuario() +" exitosamente.");
+		response.setResponse(usuarioDb);
 		return response;
 	}
 
