@@ -9,5 +9,7 @@ public interface IUsuarioService {
 	SingleResponse<List<UsuarioEntity>> consultarUsuarios();
 	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuarios);
 	public SingleResponse<UsuarioEntity> actualizarUsuario(UsuarioEntity usuarios);
+	public SingleResponse<UsuarioEntity> eliminarUsuario(Integer idUsuario);
+	SingleResponse<List<UsuarioEntity>> consultarUsuariosActivos();
 
 }
