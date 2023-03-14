@@ -8,5 +8,6 @@ import com.mccarton.model.entity.UsuarioEntity;
 public interface IUsuarioService {
 	SingleResponse<List<UsuarioEntity>> consultarUsuarios();
 	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuarios);
+	public SingleResponse<UsuarioEntity> actualizarUsuario(UsuarioEntity usuarios);
 
 }
