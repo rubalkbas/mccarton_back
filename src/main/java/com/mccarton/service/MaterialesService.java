@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.mccarton.exceptions.BusinessException;
 import com.mccarton.model.dto.SingleResponse;
 import com.mccarton.model.entity.MaterialesEntity;
-import com.mccarton.repository.IMaterialeslRepository;
+import com.mccarton.repository.IMaterialesRepository;
 
 @Service
 public class MaterialesService implements IMaterialesService{
@@ -25,7 +25,7 @@ public class MaterialesService implements IMaterialesService{
 	public static final Integer ESTATUS_ACTIVO = 1;
 	
 	@Autowired
-	private IMaterialeslRepository materialRepository;
+	private IMaterialesRepository materialRepository;
 
 
 	@Transactional
@@ -120,6 +120,8 @@ public class MaterialesService implements IMaterialesService{
 		}
 		MaterialesEntity materialUpdate = materialOp.get();
 		materialUpdate.setEstatus(material.getEstatus());
+		materialUpdate.setDescripcionMaterial(material.getDescripcionMaterial());
+		materialUpdate.setNombreMaterial(material.getNombreMaterial());
 		try {
 			materialUpdate = materialRepository.save(materialUpdate);
 		} catch (DataAccessException ex) {
