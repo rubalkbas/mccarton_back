@@ -8,8 +8,8 @@ import com.mccarton.model.entity.MaterialesEntity;
 public interface IMaterialesService {
 	
 	SingleResponse<List<MaterialesEntity>> consultarMateriales();
-	SingleResponse<MaterialesEntity> crearMateriales(MaterialesEntity rol);
+	SingleResponse<MaterialesEntity> crearMateriales(MaterialesEntity mat);
 	SingleResponse<List<MaterialesEntity>> consultarMaterialesActivos();
-	SingleResponse<MaterialesEntity> actualizarEstatusMaterial(MaterialesEntity rol);
+	SingleResponse<MaterialesEntity> actualizarMaterial(MaterialesEntity mat);
 
 }

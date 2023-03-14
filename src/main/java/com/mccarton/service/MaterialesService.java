@@ -106,7 +106,7 @@ public class MaterialesService implements IMaterialesService{
 
 
 	@Override
-	public SingleResponse<MaterialesEntity> actualizarEstatusMaterial(MaterialesEntity material) {
+	public SingleResponse<MaterialesEntity> actualizarMaterial(MaterialesEntity material) {
 		Optional<MaterialesEntity> materialOp = Optional.empty();
 		try {
 			materialOp = materialRepository.findById(material.getIdMaterial());
