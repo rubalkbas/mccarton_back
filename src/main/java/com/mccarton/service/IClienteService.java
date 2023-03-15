@@ -8,5 +8,6 @@ import com.mccarton.model.entity.ClienteEntity;
 public interface IClienteService {
 	
 	SingleResponse<List<ClienteEntity>> consultarCliente();
-	SingleResponse<ClienteEntity> crearCliente();
+	SingleResponse<ClienteEntity> crearCliente(ClienteEntity cliente);
+	SingleResponse<ClienteEntity> eliminarCliente(Integer id);
 }

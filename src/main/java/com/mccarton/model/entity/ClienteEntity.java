@@ -29,6 +29,7 @@ public class ClienteEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID_CLIENTE", length = 6)
+	@JsonBackReference
 	private Integer idCliente;
 	
 	@Column(name = "CORREO_ELECTRONICO", unique = true, nullable = false, length = 50)
@@ -43,7 +44,7 @@ public class ClienteEntity implements Serializable {
 	@Column(name = "APELLIDO_PATERNO", nullable = false, length = 30)
 	private String apellidoPaterno;
 	
-	@Column(name = "APELLIDO_MATERNO",  length = 30)
+	@Column(name = "APELLIDO_MATERNO", nullable= false, length = 30)
 	private String apellidoMaterno;
 	
 	@Column(name = "TELEFONO", nullable = false, length = 10)

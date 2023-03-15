@@ -8,7 +8,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,12 +35,5 @@ public class UsuarioController {
 		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
 		response = usuarioService.crearUsuario(usuario);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
-	}
-	
-	@PutMapping(path = "/actualizarUsuario", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<UsuarioEntity>> actualizarUsuario(@RequestBody UsuarioEntity usuario){
-		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
-		response = usuarioService.actualizarUsuario(usuario);
-		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }
