@@ -53,29 +53,29 @@ public class ClienteEntity implements Serializable {
 	@Column(name = "ESTATUS", nullable = false, length = 1)
 	private Integer estatus;
 	
-	/**
-	 * Relación Uno a Muchos
-	 * Lista de asuntos
-	 * */
-	@OneToMany(mappedBy = "cliente")
-	@JsonBackReference
-	private List<DireccionEntity> direcciones;
-	
-	/**
-	 * Relación Uno a Muchos
-	 * Lista de asuntos
-	 * */
-	@OneToMany(mappedBy = "cliente")
-	@JsonBackReference
-	private List<CarroComprasEntity> carroCompras;
-	
-	/**
-	 * Relación Uno a Muchos
-	 * Lista de asuntos
-	 * */
-	@OneToMany(mappedBy = "cliente")
-	@JsonBackReference
-	private List<ListaDeseosEntity> listaDeseos;
+//	/**
+//	 * Relación Uno a Muchos
+//	 * Lista de asuntos
+//	 * */
+//	@OneToMany(mappedBy = "cliente")
+//	@JsonBackReference
+//	private List<DireccionEntity> direcciones;
+//	
+//	/**
+//	 * Relación Uno a Muchos
+//	 * Lista de asuntos
+//	 * */
+//	@OneToMany(mappedBy = "cliente")
+//	@JsonBackReference
+//	private List<CarroComprasEntity> carroCompras;
+//	
+//	/**
+//	 * Relación Uno a Muchos
+//	 * Lista de asuntos
+//	 * */
+//	@OneToMany(mappedBy = "cliente")
+//	@JsonBackReference
+//	private List<ListaDeseosEntity> listaDeseos;
 
 
 	
