@@ -3,6 +3,7 @@ package com.mccarton.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mccarton.model.dto.SingleResponse;
@@ -58,6 +60,16 @@ public class UsuarioController {
 	public ResponseEntity<SingleResponse<List<UsuarioEntity>>> listarUsuariosActivos(){
 		SingleResponse<List<UsuarioEntity>> response = new SingleResponse<>();
 		response = usuarioService.consultarUsuariosActivos();
+		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+	}
+	
+	@GetMapping(path = "/listarUsuariosActivos/page/{noPagina}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<Page<UsuarioEntity>>> listarActivosPorPagina(
+			@PathVariable ("noPagina") Integer noPagina, @RequestParam ("campo") String campo,
+			@RequestParam("direccion") String direccion,
+			@RequestParam("buscar") String buscar){
+		SingleResponse<Page<UsuarioEntity>> response = new SingleResponse<>();
+		response = usuarioService.consultarPorPaginas(noPagina, campo, direccion, buscar);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 }
