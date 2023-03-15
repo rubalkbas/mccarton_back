@@ -83,28 +83,28 @@ public class ProductosEntity implements Serializable {
 	private Double peso;
 	
 	
-	/**
-	 * Relación Uno a Muchos
-	 * Lista de asuntos
-	 * */
-	@OneToMany(mappedBy = "producto")
-	@JsonBackReference
-	private List<OrdenDetalleEntity> ordenDetalle;
+//	/**
+//	 * Relación Uno a Muchos
+//	 * Lista de asuntos
+//	 * */
+//	@OneToMany(mappedBy = "producto")
+//	@JsonBackReference
+//	private List<OrdenDetalleEntity> ordenDetalle;
 	
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "ID_MATERIAL" , nullable = true)
-	@JsonManagedReference
+	//@JsonManagedReference
 	private MaterialesEntity material;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "ID_COLOR", nullable = false)
-	@JsonManagedReference
+	//@JsonManagedReference
 	private ColoresEntity color;
 	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "ID_CATEGORIAS" , nullable = true)
-	@JsonManagedReference
+	//@JsonManagedReference
 	private CategoriasEntity categoria;
 	
 	

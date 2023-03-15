@@ -102,5 +102,27 @@ public class ProductosService implements IProductosService{
 		}
 		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de Productos en Stock en la BD");
 	}
+	
+	@Override
+	public SingleResponse<Optional<ProductosEntity>> detalleProducto(ProductosEntity producto) {
+		Optional<ProductosEntity> productoDetalle = Optional.empty();
+		
+		try {
+			productoDetalle = productoRepository.findById(producto.getIdProducto());
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los Productos en la BD");
+		}
+		
+		if(productoDetalle.isPresent()) {
+			SingleResponse<Optional<ProductosEntity>> response = new SingleResponse<>();
+			response.setOk(true);
+			response.setMensaje("Se ha obtenido la lista de Productos en Stock exitosamente");
+			response.setResponse(productoDetalle);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de Productos en la BD");
+	}
 
 }
