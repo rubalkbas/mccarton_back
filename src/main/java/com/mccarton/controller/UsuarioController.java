@@ -47,18 +47,18 @@ public class UsuarioController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-//	@DeleteMapping(path = "/eliminarUsuario/{idUsuario}",  produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<SingleResponse<UsuarioEntity>> eliminarUsuario(@PathVariable ("idUsuario") Integer idUsuario){
-//		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
-//		response = usuarioService.eliminarUsuario(idUsuario);
-//		return new ResponseEntity<>(response, HttpStatus.OK);
-//	}
-//	
-//	@GetMapping(path = "/listarUsuariosActivos", produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<SingleResponse<List<UsuarioEntity>>> listarUsuariosActivos(){
-//		SingleResponse<List<UsuarioEntity>> response = new SingleResponse<>();
-//		response = usuarioService.consultarUsuariosActivos();
-//		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
-//	}
+	@DeleteMapping(path = "/eliminarUsuario/{idUsuario}",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<UsuarioEntity>> eliminarUsuario(@PathVariable ("idUsuario") Integer idUsuario){
+		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
+		response = usuarioService.eliminarUsuario(idUsuario);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "/listarUsuariosActivos", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<List<UsuarioEntity>>> listarUsuariosActivos(){
+		SingleResponse<List<UsuarioEntity>> response = new SingleResponse<>();
+		response = usuarioService.consultarUsuariosActivos();
+		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+	}
 
 }

@@ -10,4 +10,5 @@ public interface IClienteService {
 	SingleResponse<List<ClienteEntity>> consultarCliente();
 	SingleResponse<ClienteEntity> crearCliente(ClienteEntity cliente);
 	SingleResponse<ClienteEntity> eliminarCliente(Integer id);
+	SingleResponse<ClienteEntity> actualizarCliente(ClienteEntity cliente);
 }
