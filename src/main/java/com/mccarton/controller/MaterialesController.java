@@ -51,10 +51,10 @@ public class MaterialesController {
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 	
-	@PutMapping(path = "/actualizarEstatusMaterial", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<MaterialesEntity>> actualizaEstatusMaterial(@RequestBody MaterialesEntity material){
+	@PutMapping(path = "/actualizarMaterial", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<MaterialesEntity>> actualizaMaterial(@RequestBody MaterialesEntity material){
 		SingleResponse<MaterialesEntity> response = new SingleResponse<>();
-		response = MaterialesService.actualizarEstatusMaterial(material);
+		response = MaterialesService.actualizarMaterial(material);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 }

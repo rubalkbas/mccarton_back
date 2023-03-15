@@ -24,7 +24,7 @@ import com.mccarton.repository.IUsuarioRepository;
 @Service
 public class UsuarioService implements IUsuarioService {
 	
-	
+	public static final Integer ESTATUS_ACTIVO = 1;
 	private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
 	
 	@Autowired
@@ -65,7 +65,7 @@ public class UsuarioService implements IUsuarioService {
 	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuario) {
 		Optional<UsuarioEntity> usuarioO = Optional.empty();
 		try {
-			usuarioO = usuarioRepository.findBycorreoElectronicoIgnoreCase(usuario.getCorreoElectronico());
+			usuarioO = usuarioRepository.findByCorreoElectronicoIgnoreCase(usuario.getCorreoElectronico());
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
@@ -134,7 +134,7 @@ public class UsuarioService implements IUsuarioService {
 		if(usuario.getCorreoElectronico()!= null) {
 			Optional<UsuarioEntity> usuarioO = Optional.empty();
 			try {
-				usuarioO = usuarioRepository.findBycorreoElectronicoIgnoreCase(usuario.getCorreoElectronico());
+				usuarioO = usuarioRepository.findByCorreoElectronicoIgnoreCase(usuario.getCorreoElectronico());
 			} catch (DataAccessException ex) {
 				log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 						ex.getStackTrace());
@@ -180,6 +180,60 @@ public class UsuarioService implements IUsuarioService {
 		response.setMensaje("Se ha actualizado al usuario " + usuarioDb.getNombreUsuario() +" exitosamente.");
 		response.setResponse(usuarioDb);
 		return response;
+	}
+
+
+	@Transactional
+	@Override
+	public SingleResponse<UsuarioEntity> eliminarUsuario(Integer idUsuario) {
+		Optional<UsuarioEntity> oUsuarioDb = Optional.empty();
+		try {
+			oUsuarioDb = usuarioRepository.findById(idUsuario);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
+		}
+		
+		if(!oUsuarioDb.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  usuario con Id " + idUsuario +" no existe en la BD");
+		}
+		
+		try {
+			usuarioRepository.deleteById(idUsuario);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al borrar el usuario en la BD");
+		}
+		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
+		response.setOk(true);
+		response.setMensaje("Se ha eliminado al usuario exitosamente.");
+		
+		return response;
+	}
+
+
+	@Transactional
+	@Override
+	public SingleResponse<List<UsuarioEntity>> consultarUsuariosActivos() {
+List<UsuarioEntity> listaUsuarios = new ArrayList<>();
+		
+		try {
+			listaUsuarios = usuarioRepository.findByEstatusOrderByApellidoPaternoAscApellidoMaternoAscNombreUsuarioAsc(ESTATUS_ACTIVO);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
+		}
+		if(!listaUsuarios.isEmpty()) {
+			SingleResponse<List<UsuarioEntity>> response = new SingleResponse<>();
+			response.setOk(true);
+			response.setMensaje("Se ha obtenido la lista de usuarios activos exitosamente");
+			response.setResponse(listaUsuarios);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de usuarios activos en la BD");
 	}
 
 }

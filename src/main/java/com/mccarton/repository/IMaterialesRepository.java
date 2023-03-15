@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.mccarton.model.entity.MaterialesEntity;
 
-public interface IMaterialeslRepository extends JpaRepository<MaterialesEntity, Integer>{
+public interface IMaterialesRepository extends JpaRepository<MaterialesEntity, Integer>{
 	
 	Optional<MaterialesEntity> findByNombreMaterialIgnoreCase(String nombreMaterial);
 	List<MaterialesEntity> findByEstatus(Integer estatus);
