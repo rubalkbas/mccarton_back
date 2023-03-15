@@ -59,5 +59,12 @@ public class ProductosController {
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 	
+	@PutMapping(path = "/actualizaProducto", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<ProductosEntity>> actualizaProducto(@RequestBody ProductosEntity producto){
+		SingleResponse<ProductosEntity> response = new SingleResponse<>();
+		response = productosService.actualizarProducto(producto);
+		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+	}
+	
 	
 }

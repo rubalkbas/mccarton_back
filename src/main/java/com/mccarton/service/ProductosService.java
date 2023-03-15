@@ -1,6 +1,8 @@
 package com.mccarton.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -123,6 +125,52 @@ public class ProductosService implements IProductosService{
 			return response;
 		}
 		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de Productos en la BD");
+	}
+	
+	@Override
+	public SingleResponse<ProductosEntity> actualizarProducto(ProductosEntity producto) {
+		Optional<ProductosEntity> productoOp = Optional.empty();
+		try {
+			productoOp = productoRepository.findById(producto.getIdProducto());
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los productoes en la BD");
+		}
+		if(!productoOp.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  producto con Id " + producto.getIdProducto() +" no existe en la BD");
+		}
+		ProductosEntity productoUpdate = productoOp.get();
+		productoUpdate.setAltoExterior(producto.getAltoExterior());
+		productoUpdate.setAltoInterior(producto.getAltoInterior());
+		productoUpdate.setAnchoExterior(producto.getAnchoExterior());
+		productoUpdate.setAnchoInterior(producto.getAnchoInterior());
+		productoUpdate.setLargoExterior(producto.getLargoExterior());
+		productoUpdate.setLargoInterior(producto.getLargoInterior());
+		productoUpdate.setCodigoReferencia(producto.getCodigoReferencia());
+		productoUpdate.setDescripcionBreve(producto.getDescripcionBreve());
+		productoUpdate.setFechaModificacion(LocalDateTime.now());
+		productoUpdate.setNombreProducto(producto.getNombreProducto());
+		productoUpdate.setPeso(producto.getPeso());
+		productoUpdate.setPrecioCompra(producto.getPrecioCompra());
+		productoUpdate.setPrecioVenta(producto.getPrecioVenta());
+		productoUpdate.setStock(producto.getStock());
+		productoUpdate.setCategoria(producto.getCategoria());
+		productoUpdate.setColor(producto.getColor());
+		productoUpdate.setMaterial(producto.getMaterial());
+
+		try {
+			productoUpdate = productoRepository.save(productoUpdate);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los productoes en la BD");
+		}
+		SingleResponse<ProductosEntity> response = new SingleResponse<>();
+		response.setOk(true);
+		response.setMensaje("Se ha actualizado el producto con Id" + productoUpdate.getIdProducto() +" exitosamente.");
+		response.setResponse(productoUpdate);
+		return response;
 	}
 
 }
