@@ -15,6 +15,7 @@ public interface IUsuarioRepository extends JpaRepository<UsuarioEntity, Integer
 	Optional<UsuarioEntity> findByCorreoElectronicoIgnoreCase(String correo);
 	List<UsuarioEntity> findByEstatusOrderByApellidoPaternoAscApellidoMaternoAscNombreUsuarioAsc(Integer estatus);
 	Page<UsuarioEntity> findByEstatus(Integer estatus, Pageable pageable);
-	@Query("SELECT u FROM UsuarioEntity u WHERE u.nombreUsuario LIKE %?1%")
+	@Query("SELECT u FROM UsuarioEntity u WHERE CONCAT( u.nombreUsuario,' ',u.apellidoPaterno,' ',"
+			+ "u.apellidoMaterno,' ' , u.correoElectronico) LIKE %?1%")		
 	Page<UsuarioEntity> findAll(String search, Pageable pageable);
 }

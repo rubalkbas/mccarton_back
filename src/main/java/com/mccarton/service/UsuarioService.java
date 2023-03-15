@@ -152,7 +152,7 @@ public class UsuarioService implements IUsuarioService {
 		if(usuario.getEstatus()!= null) {
 			usuarioDb.setEstatus(usuario.getEstatus());
 		}
-		if(usuario.getRol().getIdRol()!= null) {
+		if(usuario.getRol()!= null) {
 			Optional<RolEntity> rolOp = Optional.empty();
 			try {
 				rolOp = rolRepository.findById(usuario.getRol().getIdRol());
@@ -241,6 +241,7 @@ List<UsuarioEntity> listaUsuarios = new ArrayList<>();
 	}
 
 
+	@Transactional
 	@Override
 	public SingleResponse<Page<UsuarioEntity>> consultarPorPaginas(int noPagina, String campo, String direccion, String buscar) {
 		int pageSize = 5;
