@@ -22,6 +22,7 @@ import com.mccarton.repository.ICategoriaRepository;
 public class CategoriasService implements ICategoriaService {
 
 	private static final Logger log = LoggerFactory.getLogger(CategoriasService.class);
+	private static final Integer ESTATUS = 1;
 	
 	@Autowired
 	private ICategoriaRepository categoriaRepository;
@@ -87,7 +88,7 @@ public class CategoriasService implements ICategoriaService {
 		} catch (DataAccessException excepcion) {
 			log.error("Ha ocurrido un error inesperado. Excepcion {} {}", excepcion,
 					excepcion.getStackTrace());
-			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al encontrar la materia en la Base de Datos");
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al encontrar la categoria en la Base de Datos");
 		}
 		
 		if(!categoriaOpcional.isPresent()) {
@@ -116,6 +117,64 @@ public class CategoriasService implements ICategoriaService {
 		response.setResponse(categoriaActualizado);
 		
 		return response;
+	}
+
+	@Override
+	public SingleResponse<CategoriasEntity> actualizarEstatusCategoria(CategoriasEntity categoria) {
+		
+		Optional<CategoriasEntity> categoriaOpcional = Optional.empty();
+							
+		try {
+			categoriaOpcional = categoriaRepository.findById(categoria.getIdCategorias());
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Excepcion {} {}", excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR,"Error al encontrar la categoria en la Base de Datos");
+		}
+		
+		if(categoriaOpcional.isEmpty()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "La Categoria con el ID: "+ categoria.getIdCategorias() + "no se encontro");
+		}
+				
+		CategoriasEntity categoriaBorrado = categoriaOpcional.get();
+		categoriaBorrado.setEstatus(categoria.getEstatus());
+		
+		try {
+			categoriaBorrado = categoriaRepository.save(categoriaBorrado);			
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Excepcion {} {}", excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al eliminar la categoria");
+		}
+		
+		SingleResponse<CategoriasEntity> response = new SingleResponse<CategoriasEntity>();
+		
+		response.setMensaje("La categoria se elimino correctamente");
+		response.setOk(true);
+		response.setResponse(categoriaBorrado);
+		return response;
+	}
+
+	@Override
+	public SingleResponse<List<CategoriasEntity>> consultarCategoriasActivas() {
+		List<CategoriasEntity> listaCategoria = new ArrayList<CategoriasEntity>();
+		try {
+			listaCategoria = categoriaRepository.findByEstatus(ESTATUS);		
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado {} {} ",excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar las categorias en la BD");		
+		}
+		
+		if(!listaCategoria.isEmpty()) {
+			SingleResponse<List<CategoriasEntity>> response = new SingleResponse<List<CategoriasEntity>>();
+			response.setOk(true);
+			response.setMensaje("Se obtuvo las categorias con exito");
+			response.setResponse(listaCategoria);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron categorias en la Base de datos");
+				
 	}
 
 }

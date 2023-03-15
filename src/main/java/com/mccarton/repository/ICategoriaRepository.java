@@ -1,6 +1,7 @@
 package com.mccarton.repository;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,4 +12,5 @@ public interface ICategoriaRepository extends JpaRepository<CategoriasEntity, In
 
 	Optional<CategoriasEntity> findByNombreCategoriaIgnoreCase(String nombreCategoria);	
 
+	List<CategoriasEntity> findByEstatus(Integer estatus);
 }

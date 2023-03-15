@@ -49,7 +49,7 @@ public class CategoriasEntity implements Serializable {
 	@Column(name = "ID_CATEGORIA_PADRE", length = 1 )
 	private Integer idCategoriaPadre;
 	
-	@Column(name = "ESTATUS",nullable = false,length = 1)
+	@Column(name = "ESTATUS",nullable = false, length = 1)
 	private Integer estatus;
 	
 	/**

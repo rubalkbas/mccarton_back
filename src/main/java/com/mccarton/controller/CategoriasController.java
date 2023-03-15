@@ -1,5 +1,6 @@
 package com.mccarton.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,21 @@ public class CategoriasController {
 		SingleResponse<CategoriasEntity> response = new SingleResponse<CategoriasEntity>();
 		response = categoriaService.actualizarCategoria(categoria);
 		return new ResponseEntity<SingleResponse<CategoriasEntity>>(response,HttpStatus.OK);
+	}
+	
+	@PutMapping(value = "/actualizarEstatusCategoria", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<CategoriasEntity>>actualizarEstatusCategoria(CategoriasEntity categoria ){
+		SingleResponse<CategoriasEntity> response = new SingleResponse<CategoriasEntity>();
+		response = categoriaService.actualizarEstatusCategoria(categoria);
+		return new ResponseEntity<SingleResponse<CategoriasEntity>>(response,HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/consultarCategoriasActivas", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<List<CategoriasEntity>>> consultarCategoriasActivas(){
+		SingleResponse<List<CategoriasEntity>> response = new SingleResponse <List<CategoriasEntity>>();
+		response = categoriaService.consultarCategoriasActivas();
+		return new ResponseEntity<SingleResponse<List<CategoriasEntity>>>(response,HttpStatus.OK);		
+		
 	}
 	
 	

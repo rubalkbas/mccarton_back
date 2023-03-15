@@ -10,5 +10,9 @@ public interface ICategoriaService {
 	SingleResponse<List<CategoriasEntity>> consultarCategorias();
 	SingleResponse<CategoriasEntity> guardarCategoria(CategoriasEntity categoria);
 	SingleResponse<CategoriasEntity> actualizarCategoria(CategoriasEntity categoria);
+	SingleResponse<CategoriasEntity> actualizarEstatusCategoria(CategoriasEntity categoria);
+	SingleResponse<List<CategoriasEntity>> consultarCategoriasActivas();
 
+	
+	
 }
