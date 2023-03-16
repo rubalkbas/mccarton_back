@@ -17,7 +17,7 @@ public interface ICategoriaRepository extends JpaRepository<CategoriasEntity, In
 
 	List<CategoriasEntity> findByEstatus(Integer estatus);
 	
-	@Query("SELECT c FROM CategoriasEntity c WHERE CONCAT( c.idCategorias,' ',c.descripcionCategoria,' ',c.nombreCategoria,' ',c.detallesCategoria,' ',c.codigoReferencia,' ',c.idCategoriaPadre,' ',c.estatus) LIKE %?1%")
+	@Query("SELECT c FROM CategoriasEntity c WHERE CONCAT( c.idCategorias,' ',c.descripcionCategoria,' ',c.nombreCategoria,' ',c.detallesCategoria,' ',c.codigoReferencia,' ',c.estatus) LIKE %?1%")
 	Page<CategoriasEntity> findAll(String search, Pageable pageable);
 
 }
