@@ -1,5 +1,6 @@
 package com.mccarton.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mccarton.exceptions.BusinessException;
 import com.mccarton.model.dto.SingleResponse;
@@ -66,7 +68,7 @@ public class UsuarioService implements IUsuarioService {
 
 	@Transactional
 	@Override
-	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuario) {
+	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuario, MultipartFile imagen) {
 		Optional<UsuarioEntity> usuarioO = Optional.empty();
 		try {
 			usuarioO = usuarioRepository.findByCorreoElectronicoIgnoreCase(usuario.getCorreoElectronico());
@@ -79,11 +81,20 @@ public class UsuarioService implements IUsuarioService {
 			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  correo electrónico " + usuario.getCorreoElectronico() +" ya existe en la BD");
 		}
 		usuario.setCorreoElectronico(usuario.getCorreoElectronico().toLowerCase());
-		usuario.setEstatus(1);
+		if(!imagen.isEmpty() || imagen != null) {
+			usuario.setNombreImagen(imagen.getOriginalFilename());
+			usuario.setTipoImagen(imagen.getContentType());
+			try {
+				usuario.setBytesImagen(imagen.getBytes());
+			} catch (IOException e) {
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "Error al procesar la imagen en el sistema.");
+			}
+		}
+		usuario.setEstatus(ESTATUS_ACTIVO);
 		
 		Optional<RolEntity> rolOp = Optional.empty();
 		try {
-			rolOp = rolRepository.findById(usuario.getRol().getIdRol());
+			rolOp = rolRepository.findById(usuario.getIdRolF());
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
@@ -105,6 +116,7 @@ public class UsuarioService implements IUsuarioService {
 		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
 		response.setOk(true);
 		response.setMensaje("Se ha guardado al usuario " + usuario.getNombreUsuario() +" exitosamente.");
+		usuario.setMultipartFile(null);
 		response.setResponse(usuario);
 		return response;
 	}
@@ -169,9 +181,9 @@ public class UsuarioService implements IUsuarioService {
 		if(usuario.getPassword()!= null) {
 			usuarioDb.setPassword(passwordEncoder.encode(usuario.getPassword()));
 		}
-		if(usuario.getFoto()!= null) {
-			usuarioDb.setFoto(usuario.getFoto());
-		}
+//		if(usuario.getFoto()!= null) {
+//			usuarioDb.setFoto(usuario.getFoto());
+//		}
 		try {
 			usuarioDb = usuarioRepository.save(usuarioDb);
 		} catch (DataAccessException ex) {
@@ -244,7 +256,7 @@ List<UsuarioEntity> listaUsuarios = new ArrayList<>();
 	@Transactional
 	@Override
 	public SingleResponse<Page<UsuarioEntity>> consultarPorPaginas(int noPagina, String campo, String direccion, String buscar) {
-		int pageSize = 5;
+		int pageSize = 10;
 		Pageable pageable = PageRequest.of(noPagina-1, pageSize,
 				direccion.equalsIgnoreCase("asc") ? Sort.by(campo).ascending()
 						: Sort.by(campo).descending());
@@ -272,6 +284,58 @@ List<UsuarioEntity> listaUsuarios = new ArrayList<>();
 			return response;
 		}
 		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros en la página " + noPagina);
+	}
+
+
+	@Transactional
+	@Override
+	public SingleResponse<UsuarioEntity> detalleUsuario(Integer idUsuario) {
+		Optional<UsuarioEntity> oUsuarioDb = Optional.empty();
+		try {
+			oUsuarioDb = usuarioRepository.findById(idUsuario);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
+		}
+		
+		if(!oUsuarioDb.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  usuario con Id " + idUsuario +" no existe en la BD");
+		}
+		
+		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
+		response.setOk(true);
+		response.setMensaje("Se ha obtenido los detalles del usuario exitosamente.");
+		response.setResponse(oUsuarioDb.get());
+		return response;
+	}
+
+
+	@Transactional
+	@Override
+	public SingleResponse<UsuarioEntity> loginUsuario(UsuarioEntity usuario) {
+		Optional<UsuarioEntity> oUsuarioDb = Optional.empty();
+		try {
+			oUsuarioDb = usuarioRepository.findByCorreoElectronicoIgnoreCaseAndEstatus(usuario.getCorreoElectronico(), ESTATUS_ACTIVO);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
+		}
+		
+		if(!oUsuarioDb.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontró registro de usuario con el correo electrónico: " + usuario.getCorreoElectronico());
+		}
+		UsuarioEntity usuarioDb = oUsuarioDb.get();
+		String encodedPassword = usuarioDb.getPassword();
+		if(passwordEncoder.matches(usuario.getPassword(), encodedPassword)) {
+			SingleResponse<UsuarioEntity> response = new SingleResponse<>();
+			response.setOk(true);
+			response.setMensaje("Login exitoso.");
+			response.setResponse(usuarioDb);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "Contraseña incorrecta");
 	}
 
 }

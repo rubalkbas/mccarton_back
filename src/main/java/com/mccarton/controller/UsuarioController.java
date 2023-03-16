@@ -9,13 +9,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.mccarton.model.dto.SingleResponse;
 import com.mccarton.model.entity.UsuarioEntity;
@@ -35,10 +38,11 @@ public class UsuarioController {
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 	
-	@PostMapping(path = "/nuevoUsuario", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<UsuarioEntity>> crearRol(@RequestBody  UsuarioEntity usuario){
+	@PostMapping(path = "/nuevoUsuario", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<UsuarioEntity>> nuevoUsuario(@ModelAttribute UsuarioEntity usuario){
 		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
-		response = usuarioService.crearUsuario(usuario);
+		System.out.println(usuario.getNombreUsuario());
+		response = usuarioService.crearUsuario(usuario, usuario.getMultipartFile());
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 
@@ -71,5 +75,19 @@ public class UsuarioController {
 		SingleResponse<Page<UsuarioEntity>> response = new SingleResponse<>();
 		response = usuarioService.consultarPorPaginas(noPagina, campo, direccion, buscar);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+	}
+	
+	@GetMapping(path = "/detalleUsuario/{idUsuario}",  produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<UsuarioEntity>> detalleUsuario(@PathVariable ("idUsuario") Integer idUsuario){
+		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
+		response = usuarioService.detalleUsuario(idUsuario);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "/loginUsuario", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<UsuarioEntity>> loginUsuario(@RequestBody UsuarioEntity usuario){
+		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
+		response = usuarioService.loginUsuario(usuario);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

@@ -8,10 +8,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -47,8 +52,15 @@ public class UsuarioEntity implements Serializable{
 	@Column(name = "PASSWORD", length = 64)
 	private String password;
 	
-	@Column(name = "FOTO", length = 100)
-	private String foto;
+	@Column(name = "NOMBRE_IMAGEN", length = 100)
+	private String nombreImagen;
+	
+	@Column(name = "TIPO_IMAGEN", length = 100)
+	private String tipoImagen;
+	
+	@Column(name = "BYTES_IMAGEN", length = 100)
+	@Lob
+	private byte[] bytesImagen;
 	
 	@Column(name = "ESTATUS", length = 1)
 	private Integer estatus;
@@ -57,6 +69,13 @@ public class UsuarioEntity implements Serializable{
 	@JoinColumn(name = "ID_ROL"	)
 	//@JsonManagedReference
 	private RolEntity rol;
+	
+	@Transient
+	@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private transient MultipartFile multipartFile;
+	
+	@Transient
+	private transient Integer idRolF;
 	
 	
 
