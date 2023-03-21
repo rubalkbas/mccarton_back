@@ -11,7 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.Getter;
@@ -72,6 +72,7 @@ public class DireccionEntity implements Serializable{
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "ID_CLIENTE" , nullable = true)
 	@JsonManagedReference
+	@JsonIgnore
 	private ClienteEntity cliente;
 	
 
