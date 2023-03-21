@@ -55,7 +55,7 @@ public class CategoriasController {
 	}
 	
 	@PutMapping(value = "/actualizarEstatusCategoria", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<CategoriasEntity>>actualizarEstatusCategoria(CategoriasEntity categoria ){
+	public ResponseEntity<SingleResponse<CategoriasEntity>>actualizarEstatusCategoria(@RequestBody CategoriasEntity categoria ){
 		SingleResponse<CategoriasEntity> response = new SingleResponse<CategoriasEntity>();
 		response = categoriaService.actualizarEstatusCategoria(categoria);
 		return new ResponseEntity<SingleResponse<CategoriasEntity>>(response,HttpStatus.OK);
@@ -74,6 +74,19 @@ public class CategoriasController {
 			@PathVariable ("tamanioPagina") Integer tamanioPagina,@RequestParam String campo,@RequestParam String campoBusqueda, @RequestParam String direccion){
 		SingleResponse<Page<CategoriasEntity>> response = categoriaService.consultarPorPaginas(numeroPagina, tamanioPagina, campo, campoBusqueda, direccion);
 		return new ResponseEntity<SingleResponse<Page<CategoriasEntity>>>(response,HttpStatus.OK);		
+	}
+	
+	@PostMapping(value = "/consultarCategoriasIdPadre", produces = MediaType.APPLICATION_JSON_VALUE)
+	//requiered false si la categoria tiene null, no manda el error si no se envia el parametro
+	public ResponseEntity<SingleResponse<List<CategoriasEntity>>> consultarPorIdPadre(@RequestParam(required = false) Integer idPadre){
+		SingleResponse<List<CategoriasEntity>> response =  categoriaService.consultarPorIdCategoriaPadre(idPadre);
+		return new ResponseEntity<SingleResponse<List<CategoriasEntity>>>(response,HttpStatus.OK);			
+	}
+	
+	@GetMapping(value = "/consultarCategoriasPadre",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<List<CategoriasEntity>>> consultarCategoriaPadre(){
+		SingleResponse<List<CategoriasEntity>> response = categoriaService.consultarCategoriasPadres();
+		return new ResponseEntity<SingleResponse<List<CategoriasEntity>>>(response,HttpStatus.OK);
 	}
 	
 	

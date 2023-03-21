@@ -223,4 +223,55 @@ public class CategoriasService implements ICategoriaService {
 		
 	}
 
+	@Override
+	public SingleResponse<List<CategoriasEntity>> consultarPorIdCategoriaPadre(Integer idPadre) {
+		
+		SingleResponse<List<CategoriasEntity>> response = new SingleResponse<List<CategoriasEntity>>();
+		List<CategoriasEntity>  listaCategoria = new ArrayList<CategoriasEntity>();			
+		
+		try {			
+			listaCategoria = categoriaRepository.findByIdCategoriaPadre(idPadre);	
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar las categorias en la BD");
+			// TODO: handle exception
+		}
+		
+		if(!listaCategoria.isEmpty()) {
+			response.setMensaje("Las categorias del padre son las siguientes");
+			response.setResponse(listaCategoria);
+			response.setOk(true);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registron en la categoria padre");
+		 
+	}
+
+	@Override
+	public SingleResponse<List<CategoriasEntity>> consultarCategoriasPadres() {
+
+		List<CategoriasEntity> listaCategoriaPadre = new ArrayList<CategoriasEntity>();
+		
+		try {
+			listaCategoriaPadre = categoriaRepository.findByIdCategoriaPadre(); 			
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "Error al consiltar las categorias padre");
+		}
+		
+		SingleResponse<List<CategoriasEntity>> response = new SingleResponse<List<CategoriasEntity>>();
+		
+		if(!listaCategoriaPadre.isEmpty()) {
+			response.setMensaje("Las categorias del padre son las siguientes");
+			response.setOk(true);
+			response.setResponse(listaCategoriaPadre);
+			return response;
+		}
+		
+		throw new BusinessException(HttpStatus.NOT_FOUND,"Datos no encontrados");
+		
+	}
+
 }
