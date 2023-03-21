@@ -41,13 +41,12 @@ public class UsuarioController {
 	@PostMapping(path = "/nuevoUsuario", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<UsuarioEntity>> nuevoUsuario(@ModelAttribute UsuarioEntity usuario){
 		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
-		System.out.println(usuario.getNombreUsuario());
-		response = usuarioService.crearUsuario(usuario, usuario.getMultipartFile());
+		response = usuarioService.crearUsuario(usuario);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 
-	@PutMapping(path = "/actualizarUsuario", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<UsuarioEntity>> actualizarUsuario(@RequestBody UsuarioEntity usuario){
+	@PutMapping(path = "/actualizarUsuario", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<UsuarioEntity>> actualizarUsuario(@ModelAttribute UsuarioEntity usuario){
 		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
 		response = usuarioService.actualizarUsuario(usuario);
 		return new ResponseEntity<>(response, HttpStatus.OK);

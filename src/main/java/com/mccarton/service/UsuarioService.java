@@ -68,7 +68,7 @@ public class UsuarioService implements IUsuarioService {
 
 	@Transactional
 	@Override
-	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuario, MultipartFile imagen) {
+	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuario) {
 		Optional<UsuarioEntity> usuarioO = Optional.empty();
 		try {
 			usuarioO = usuarioRepository.findByCorreoElectronicoIgnoreCase(usuario.getCorreoElectronico());
@@ -81,11 +81,11 @@ public class UsuarioService implements IUsuarioService {
 			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  correo electrónico " + usuario.getCorreoElectronico() +" ya existe en la BD");
 		}
 		usuario.setCorreoElectronico(usuario.getCorreoElectronico().toLowerCase());
-		if(!imagen.isEmpty() || imagen != null) {
-			usuario.setNombreImagen(imagen.getOriginalFilename());
-			usuario.setTipoImagen(imagen.getContentType());
+		if(!usuario.getMultipartFile().isEmpty() || usuario.getMultipartFile() != null) {
+			usuario.setNombreImagen(usuario.getMultipartFile().getOriginalFilename());
+			usuario.setTipoImagen(usuario.getMultipartFile().getContentType());
 			try {
-				usuario.setBytesImagen(imagen.getBytes());
+				usuario.setBytesImagen(usuario.getMultipartFile().getBytes());
 			} catch (IOException e) {
 				throw new BusinessException(HttpStatus.BAD_REQUEST, "Error al procesar la imagen en el sistema.");
 			}
@@ -164,26 +164,33 @@ public class UsuarioService implements IUsuarioService {
 		if(usuario.getEstatus()!= null) {
 			usuarioDb.setEstatus(usuario.getEstatus());
 		}
-		if(usuario.getRol()!= null) {
+		if(usuario.getIdRolF()!= null) {
 			Optional<RolEntity> rolOp = Optional.empty();
 			try {
-				rolOp = rolRepository.findById(usuario.getRol().getIdRol());
+				rolOp = rolRepository.findById(usuario.getIdRolF());
 			} catch (DataAccessException ex) {
 				log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 						ex.getStackTrace());
 				throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los roles en la BD");
 			}
 			if(!rolOp.isPresent()) {
-				throw new BusinessException(HttpStatus.BAD_REQUEST, "El  rol con Id " + usuario.getRol().getIdRol() +" no existe en la BD");
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "El  rol con Id " + usuario.getIdRolF() +" no existe en la BD");
 			}
 			usuarioDb.setRol(rolOp.get());
 		}
 		if(usuario.getPassword()!= null) {
 			usuarioDb.setPassword(passwordEncoder.encode(usuario.getPassword()));
 		}
-//		if(usuario.getFoto()!= null) {
-//			usuarioDb.setFoto(usuario.getFoto());
-//		}
+		
+		if(!usuario.getMultipartFile().isEmpty() || usuario.getMultipartFile() != null) {
+			usuarioDb.setNombreImagen(usuario.getMultipartFile().getOriginalFilename());
+			usuarioDb.setTipoImagen(usuario.getMultipartFile().getContentType());
+			try {
+				usuarioDb.setBytesImagen(usuario.getMultipartFile().getBytes());
+			} catch (IOException e) {
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "Error al procesar la imagen en el sistema.");
+			}
+		}
 		try {
 			usuarioDb = usuarioRepository.save(usuarioDb);
 		} catch (DataAccessException ex) {
@@ -194,6 +201,7 @@ public class UsuarioService implements IUsuarioService {
 		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
 		response.setOk(true);
 		response.setMensaje("Se ha actualizado al usuario " + usuarioDb.getNombreUsuario() +" exitosamente.");
+		usuarioDb.setMultipartFile(null);
 		response.setResponse(usuarioDb);
 		return response;
 	}
