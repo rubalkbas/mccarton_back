@@ -146,10 +146,13 @@ public class DireccionesServices implements IDireccionesServices {
 					"Error al consultar la direccion con el id de cliente  en la BD");
 		}
 
-		dirAct.setPredeterminado(ESTATUS_INACTIVO);
-		dirAct.setEstatus(ESTATUS_INACTIVO);
+		if (dirAct != null) {
+			dirAct.setPredeterminado(ESTATUS_INACTIVO);
+			dirAct.setEstatus(ESTATUS_INACTIVO);
+		}
 
 		List<DireccionEntity> dir = new ArrayList<DireccionEntity>();
+
 		try {
 			dir = direccionesRepository.findByDireccionCliente(idCliente.getIdCliente(), PageRequest.of(0, 1));
 		} catch (DataAccessException ex) {
@@ -158,7 +161,7 @@ public class DireccionesServices implements IDireccionesServices {
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Error al consultar la direccion con el id de cliente  en la BD");
 		}
-		
+
 		if (!dir.isEmpty()) {
 
 			DireccionEntity direccionEntity = new DireccionEntity();
@@ -237,16 +240,36 @@ public class DireccionesServices implements IDireccionesServices {
 					"La direccion con Id " + idCliente.getIdCliente() + " no existe en la BD");
 		}
 
-		dirAct.setCalle(direccion.getCalle());
-		dirAct.setCiudad(direccion.getCiudad());
-		dirAct.setCodigoPostal(direccion.getCodigoPostal());
-		dirAct.setColonia(direccion.getColonia());
-		dirAct.setEntreCalle1(direccion.getEntreCalle1());
-		dirAct.setEntreCalle2(direccion.getEntreCalle2());
-		dirAct.setNombreDireccion(direccion.getNombreDireccion());
-		dirAct.setNumeroExterior(direccion.getNumeroExterior());
-		dirAct.setNumeroInterior(direccion.getNumeroInterior());
-		dirAct.setTelefono(direccion.getTelefono());
+		if (direccion.getCalle() != null) {
+			dirAct.setCalle(direccion.getCalle());
+		}
+		if (direccion.getCiudad() != null) {
+			dirAct.setCiudad(direccion.getCiudad());
+		}
+		if (direccion.getCodigoPostal() != null) {
+			dirAct.setCodigoPostal(direccion.getCodigoPostal());
+		}
+		if (direccion.getColonia() != null) {
+			dirAct.setColonia(direccion.getColonia());
+		}
+		if (direccion.getEntreCalle1() != null) {
+			dirAct.setEntreCalle1(direccion.getEntreCalle1());
+		}
+		if (direccion.getEntreCalle2() != null) {
+			dirAct.setEntreCalle2(direccion.getEntreCalle2());
+		}
+		if (direccion.getNombreDireccion() != null) {
+			dirAct.setNombreDireccion(direccion.getNombreDireccion());
+		}
+		if (direccion.getNumeroExterior() != null) {
+			dirAct.setNumeroExterior(direccion.getNumeroExterior());
+		}
+		if (direccion.getNumeroInterior() != null) {
+			dirAct.setNumeroInterior(direccion.getNumeroInterior());
+		}
+		if (direccion.getTelefono() != null) {
+			dirAct.setTelefono(direccion.getTelefono());
+		}
 
 		try {
 			direccionesRepository.save(dirAct);
