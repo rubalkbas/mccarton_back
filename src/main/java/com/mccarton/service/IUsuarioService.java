@@ -10,7 +10,7 @@ import com.mccarton.model.entity.UsuarioEntity;
 
 public interface IUsuarioService {
 	SingleResponse<List<UsuarioEntity>> consultarUsuarios();
-	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuario, MultipartFile imagen);
+	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuario);
 	public SingleResponse<UsuarioEntity> actualizarUsuario(UsuarioEntity usuarios);
 	public SingleResponse<UsuarioEntity> eliminarUsuario(Integer idUsuario);
 	SingleResponse<List<UsuarioEntity>> consultarUsuariosActivos();

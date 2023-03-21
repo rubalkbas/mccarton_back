@@ -26,26 +26,28 @@ import com.mccarton.model.entity.UsuarioEntity;
 import com.mccarton.repository.IRolRepository;
 import com.mccarton.repository.IUsuarioRepository;
 
+
 @Service
 public class UsuarioService implements IUsuarioService {
-
+	
 	public static final Integer ESTATUS_ACTIVO = 1;
 	private static final Logger log = LoggerFactory.getLogger(UsuarioService.class);
-
+	
 	@Autowired
 	private IUsuarioRepository usuarioRepository;
-
+	
 	@Autowired
 	private IRolRepository rolRepository;
-
+	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
 
 	@Transactional
 	@Override
 	public SingleResponse<List<UsuarioEntity>> consultarUsuarios() {
 		List<UsuarioEntity> listaUsuarios = new ArrayList<>();
-
+		
 		try {
 			listaUsuarios = usuarioRepository.findAll();
 		} catch (DataAccessException ex) {
@@ -53,7 +55,7 @@ public class UsuarioService implements IUsuarioService {
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 		}
-		if (!listaUsuarios.isEmpty()) {
+		if(!listaUsuarios.isEmpty()) {
 			SingleResponse<List<UsuarioEntity>> response = new SingleResponse<>();
 			response.setOk(true);
 			response.setMensaje("Se ha obtenido la lista de usuarios exitosamente");
@@ -63,9 +65,10 @@ public class UsuarioService implements IUsuarioService {
 		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de usuarios en la BD");
 	}
 
+
 	@Transactional
 	@Override
-	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuario, MultipartFile imagen) {
+	public SingleResponse<UsuarioEntity> crearUsuario(UsuarioEntity usuario) {
 		Optional<UsuarioEntity> usuarioO = Optional.empty();
 		try {
 			usuarioO = usuarioRepository.findByCorreoElectronicoIgnoreCase(usuario.getCorreoElectronico());
@@ -74,17 +77,15 @@ public class UsuarioService implements IUsuarioService {
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 		}
-		if (usuarioO.isPresent()) {
-			throw new BusinessException(HttpStatus.BAD_REQUEST,
-					"El  correo electrónico " + usuario.getCorreoElectronico() + " ya existe en la BD");
+		if(usuarioO.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  correo electrónico " + usuario.getCorreoElectronico() +" ya existe en la BD");
 		}
 		usuario.setCorreoElectronico(usuario.getCorreoElectronico().toLowerCase());
-		
-		if(!imagen.isEmpty() || imagen != null) {
-			usuario.setNombreImagen(imagen.getOriginalFilename());
-			usuario.setTipoImagen(imagen.getContentType());
+		if(!usuario.getMultipartFile().isEmpty() || usuario.getMultipartFile() != null) {
+			usuario.setNombreImagen(usuario.getMultipartFile().getOriginalFilename());
+			usuario.setTipoImagen(usuario.getMultipartFile().getContentType());
 			try {
-				usuario.setBytesImagen(imagen.getBytes());
+				usuario.setBytesImagen(usuario.getMultipartFile().getBytes());
 			} catch (IOException e) {
 				throw new BusinessException(HttpStatus.BAD_REQUEST, "Error al procesar la imagen en el sistema.");
 			}
@@ -99,9 +100,8 @@ public class UsuarioService implements IUsuarioService {
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los roles en la BD");
 		}
-		if (!rolOp.isPresent()) {
-			throw new BusinessException(HttpStatus.BAD_REQUEST,
-					"El  rol con Id " + usuario.getRol().getIdRol() + " no existe en la BD");
+		if(!rolOp.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  rol con Id " + usuario.getRol().getIdRol() +" no existe en la BD");
 		}
 
 		usuario.setRol(rolOp.get());
@@ -121,6 +121,7 @@ public class UsuarioService implements IUsuarioService {
 		return response;
 	}
 
+
 	@Transactional
 	@Override
 	public SingleResponse<UsuarioEntity> actualizarUsuario(UsuarioEntity usuario) {
@@ -132,63 +133,64 @@ public class UsuarioService implements IUsuarioService {
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 		}
-
-		if (!oUsuarioDb.isPresent()) {
-			throw new BusinessException(HttpStatus.BAD_REQUEST,
-					"El  usuario con Id " + usuario.getIdUsuario() + " no existe en la BD");
+		
+		if(!oUsuarioDb.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  usuario con Id " + usuario.getIdUsuario() +" no existe en la BD");
 		}
 		UsuarioEntity usuarioDb = oUsuarioDb.get();
-		if (usuario.getNombreUsuario() != null) {
+		if(usuario.getNombreUsuario()!= null) {
 			usuarioDb.setNombreUsuario(usuario.getNombreUsuario());
 		}
-		if (usuario.getApellidoPaterno() != null) {
+		if(usuario.getApellidoPaterno()!= null) {
 			usuarioDb.setApellidoPaterno(usuario.getApellidoPaterno());
 		}
-		if (usuario.getApellidoMaterno() != null) {
+		if(usuario.getApellidoMaterno()!= null) {
 			usuarioDb.setApellidoMaterno(usuario.getApellidoMaterno());
 		}
-		if (usuario.getCorreoElectronico() != null) {
+		if(usuario.getCorreoElectronico()!= null) {
 			Optional<UsuarioEntity> usuarioO = Optional.empty();
 			try {
 				usuarioO = usuarioRepository.findByCorreoElectronicoIgnoreCase(usuario.getCorreoElectronico());
 			} catch (DataAccessException ex) {
 				log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 						ex.getStackTrace());
-				throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR,
-						"Error al consultar los usuarios en la BD");
+				throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 			}
-			if (usuarioO.isPresent()) {
-				throw new BusinessException(HttpStatus.BAD_REQUEST,
-						"El  correo electrónico " + usuario.getCorreoElectronico() + " ya existe en la BD");
+			if(usuarioO.isPresent()) {
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "El  correo electrónico " + usuario.getCorreoElectronico() +" ya existe en la BD");
 			}
 			usuarioDb.setCorreoElectronico(usuario.getCorreoElectronico().toLowerCase());
 		}
-		if (usuario.getEstatus() != null) {
+		if(usuario.getEstatus()!= null) {
 			usuarioDb.setEstatus(usuario.getEstatus());
 		}
-		if (usuario.getRol() != null) {
+		if(usuario.getIdRolF()!= null) {
 			Optional<RolEntity> rolOp = Optional.empty();
 			try {
-				rolOp = rolRepository.findById(usuario.getRol().getIdRol());
+				rolOp = rolRepository.findById(usuario.getIdRolF());
 			} catch (DataAccessException ex) {
 				log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 						ex.getStackTrace());
 				throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los roles en la BD");
 			}
-			if (!rolOp.isPresent()) {
-				throw new BusinessException(HttpStatus.BAD_REQUEST,
-						"El  rol con Id " + usuario.getRol().getIdRol() + " no existe en la BD");
+			if(!rolOp.isPresent()) {
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "El  rol con Id " + usuario.getIdRolF() +" no existe en la BD");
 			}
 			usuarioDb.setRol(rolOp.get());
 		}
-		if (usuario.getPassword() != null) {
+		if(usuario.getPassword()!= null) {
 			usuarioDb.setPassword(passwordEncoder.encode(usuario.getPassword()));
 		}
-
-//		if(usuario.getFoto()!= null) {
-//			usuarioDb.setFoto(usuario.getFoto());
-//		}
 		
+		if(!usuario.getMultipartFile().isEmpty() || usuario.getMultipartFile() != null) {
+			usuarioDb.setNombreImagen(usuario.getMultipartFile().getOriginalFilename());
+			usuarioDb.setTipoImagen(usuario.getMultipartFile().getContentType());
+			try {
+				usuarioDb.setBytesImagen(usuario.getMultipartFile().getBytes());
+			} catch (IOException e) {
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "Error al procesar la imagen en el sistema.");
+			}
+		}
 		try {
 			usuarioDb = usuarioRepository.save(usuarioDb);
 		} catch (DataAccessException ex) {
@@ -198,10 +200,12 @@ public class UsuarioService implements IUsuarioService {
 		}
 		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
 		response.setOk(true);
-		response.setMensaje("Se ha actualizado al usuario " + usuarioDb.getNombreUsuario() + " exitosamente.");
+		response.setMensaje("Se ha actualizado al usuario " + usuarioDb.getNombreUsuario() +" exitosamente.");
+		usuarioDb.setMultipartFile(null);
 		response.setResponse(usuarioDb);
 		return response;
 	}
+
 
 	@Transactional
 	@Override
@@ -214,12 +218,11 @@ public class UsuarioService implements IUsuarioService {
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 		}
-
-		if (!oUsuarioDb.isPresent()) {
-			throw new BusinessException(HttpStatus.BAD_REQUEST,
-					"El  usuario con Id " + idUsuario + " no existe en la BD");
+		
+		if(!oUsuarioDb.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  usuario con Id " + idUsuario +" no existe en la BD");
 		}
-
+		
 		try {
 			usuarioRepository.deleteById(idUsuario);
 		} catch (DataAccessException ex) {
@@ -230,24 +233,24 @@ public class UsuarioService implements IUsuarioService {
 		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
 		response.setOk(true);
 		response.setMensaje("Se ha eliminado al usuario exitosamente.");
-
+		
 		return response;
 	}
+
 
 	@Transactional
 	@Override
 	public SingleResponse<List<UsuarioEntity>> consultarUsuariosActivos() {
-		List<UsuarioEntity> listaUsuarios = new ArrayList<>();
-
+List<UsuarioEntity> listaUsuarios = new ArrayList<>();
+		
 		try {
-			listaUsuarios = usuarioRepository
-					.findByEstatusOrderByApellidoPaternoAscApellidoMaternoAscNombreUsuarioAsc(ESTATUS_ACTIVO);
+			listaUsuarios = usuarioRepository.findByEstatusOrderByApellidoPaternoAscApellidoMaternoAscNombreUsuarioAsc(ESTATUS_ACTIVO);
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 		}
-		if (!listaUsuarios.isEmpty()) {
+		if(!listaUsuarios.isEmpty()) {
 			SingleResponse<List<UsuarioEntity>> response = new SingleResponse<>();
 			response.setOk(true);
 			response.setMensaje("Se ha obtenido la lista de usuarios activos exitosamente");
@@ -256,6 +259,7 @@ public class UsuarioService implements IUsuarioService {
 		}
 		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de usuarios activos en la BD");
 	}
+
 
 	@Transactional
 	@Override
@@ -266,20 +270,20 @@ public class UsuarioService implements IUsuarioService {
 						: Sort.by(campo).descending());
 		 
 		Page<UsuarioEntity> usuarioPage = Page.empty();
-
+		
 		try {
 			if (buscar != null) {
 				usuarioPage = usuarioRepository.findAll(buscar, pageable);
-			} else {
+			}else {
 				usuarioPage = usuarioRepository.findAll(pageable);
 			}
-
+			
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 		}
-
+		
 		if (!usuarioPage.isEmpty()) {
 			SingleResponse<Page<UsuarioEntity>> response = new SingleResponse<>();
 			response.setOk(true);
