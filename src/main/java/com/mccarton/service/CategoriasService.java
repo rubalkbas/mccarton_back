@@ -10,6 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -175,6 +179,48 @@ public class CategoriasService implements ICategoriaService {
 		}
 		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron categorias en la Base de datos");
 				
+	}
+
+	@Override
+	public SingleResponse<Page<CategoriasEntity>> consultarPorPaginas(Integer numeroPagina, Integer tamanioPagina, 
+			String campo,String campoBusqueda,
+			String direccion) {
+		log.info(campo);
+		//Mandar un asc en el campo direccion para que lo ordene ascndentde si manda otro se orderna de maneras descendente
+		//numero pagina se pone -1 por que si se manda un uno no hace la paginacion
+		Pageable pageable = PageRequest.of(numeroPagina -1, tamanioPagina,direccion.equalsIgnoreCase("asc") 
+				? Sort.by(campo).ascending() : Sort.by(campo).descending());
+		
+		Page<CategoriasEntity> categoriaPage = Page.empty();
+		
+		try {
+
+
+			if(!campoBusqueda.isEmpty()) {
+				log.info("ENtre");
+				log.info(campoBusqueda);
+				categoriaPage = categoriaRepository.findAll(campoBusqueda,pageable);
+			}else {
+				categoriaPage = categoriaRepository.findAll(pageable);
+			}
+			
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar las categorias en la BD");
+		}
+		
+		if(!categoriaPage.isEmpty()) {
+			SingleResponse<Page<CategoriasEntity>> response = new SingleResponse<Page<CategoriasEntity>>();
+			response.setMensaje("Se ha obtenido la lista correctamente");
+			response.setOk(true);
+			response.setResponse(categoriaPage);
+			return response;
+
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros en la página " + numeroPagina);
+
+		
 	}
 
 }
