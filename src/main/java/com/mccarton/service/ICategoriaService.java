@@ -15,7 +15,7 @@ public interface ICategoriaService {
 	SingleResponse<CategoriasEntity> actualizarEstatusCategoria(CategoriasEntity categoria);
 	SingleResponse<List<CategoriasEntity>> consultarCategoriasActivas();
 	SingleResponse<Page<CategoriasEntity>>consultarPorPaginas(Integer numeroPagina,Integer tamanoPagina, String campo,String campoBusqueda, String direccion);
-
-	
+	SingleResponse<List<CategoriasEntity>> consultarPorIdCategoriaPadre(Integer idPadre);
+	SingleResponse<List<CategoriasEntity>> consultarCategoriasPadres();
 	
 }
