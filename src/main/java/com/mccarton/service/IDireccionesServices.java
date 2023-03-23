@@ -9,7 +9,7 @@ import com.mccarton.model.entity.DireccionEntity;
 
 public interface IDireccionesServices {
 
-	public SingleResponse<DireccionEntity> crearDireccion(ClienteDireccion direccion, ClienteEntity cliente);
+	public SingleResponse<DireccionEntity> crearDireccion(DireccionEntity direccion, Integer cliente);
 	SingleResponse<List<DireccionEntity>> consultarDireccionesPorCliente(Integer idCliente);
 	SingleResponse<DireccionEntity> eliminarDireccion(Integer id);
 	SingleResponse<DireccionEntity> crearNuevaDireccion(DireccionEntity cliente, ClienteEntity idCliente);

@@ -67,6 +67,14 @@ public class DireccionesController {
 		
 	}
 	
+	@PostMapping(path = "/crearDireccion/{idCliente}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<DireccionEntity>> crearDireccion(@RequestBody DireccionEntity direccion, @PathVariable("idCliente") Integer idCliente){
+		SingleResponse<DireccionEntity> response = new SingleResponse<>();
+		response = direccionesService.crearDireccion(direccion, idCliente);
+		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+		
+	}
+	
 	@PostMapping(path = "/actualizarDireccion/{idCliente}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<DireccionEntity>> actualizarDireccion(@ModelAttribute DireccionEntity direccion, ClienteEntity idCliente){
 		SingleResponse<DireccionEntity> response = new SingleResponse<>();

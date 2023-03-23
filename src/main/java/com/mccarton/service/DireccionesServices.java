@@ -36,11 +36,11 @@ public class DireccionesServices implements IDireccionesServices {
 
 	@Transactional
 	@Override
-	public SingleResponse<DireccionEntity> crearDireccion(ClienteDireccion clienteDireccion, ClienteEntity cliente) {
+	public SingleResponse<DireccionEntity> crearDireccion(DireccionEntity clienteDireccion, Integer cliente) {
 
 		Optional<ClienteEntity> clienteO = Optional.empty();
 		try {
-			clienteO = clienteRepository.findById(cliente.getIdCliente());
+			clienteO = clienteRepository.findById(cliente);
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
@@ -161,6 +161,8 @@ public class DireccionesServices implements IDireccionesServices {
 					"Error al consultar la direccion con el id de cliente  en la BD");
 		}
 
+		Optional<ClienteEntity> clienete = clienteRepository.findById(idCliente.getIdCliente());
+		
 		if (!dir.isEmpty()) {
 
 			DireccionEntity direccionEntity = new DireccionEntity();
@@ -177,7 +179,7 @@ public class DireccionesServices implements IDireccionesServices {
 			direccionEntity.setNumeroInterior(direccion.getNumeroInterior());
 			direccionEntity.setPredeterminado(ESTATUS_ACTIVO);
 			direccionEntity.setTelefono(direccion.getTelefono());
-			direccionEntity.setCliente(idCliente);
+			direccionEntity.setCliente(clienete.get());
 
 			try {
 				direccionesRepository.save(direccionEntity);
@@ -188,7 +190,7 @@ public class DireccionesServices implements IDireccionesServices {
 			}
 		} else {
 			throw new BusinessException(HttpStatus.BAD_REQUEST,
-					"La direccion con el id " + idCliente.getIdCliente() + " No fue encontrado");
+					"La direccion con el id " + idCliente + " No fue encontrado");
 		}
 
 		SingleResponse<DireccionEntity> response = new SingleResponse<>();
