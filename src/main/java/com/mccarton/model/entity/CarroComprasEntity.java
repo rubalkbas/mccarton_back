@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -38,14 +39,19 @@ public class CarroComprasEntity implements Serializable{
 	private Integer cantidad;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "ID_CLIENTE" , nullable = true)
+	@JoinColumn(name = "ID_CLIENTE" , nullable = false)
 	@JsonManagedReference
 	private ClienteEntity cliente;
 	
 	
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "ID_PRODUCTO" , nullable = true)
+	@JoinColumn(name = "ID_PRODUCTO" , nullable = false)
 	@JsonManagedReference
 	private ProductosEntity producto;
+	
+	@Transient
+	public double getSubtotal() {
+		return producto.getPrecioVenta() * cantidad;
+	}
 }
