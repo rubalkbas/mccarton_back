@@ -12,7 +12,7 @@ public interface IClienteService {
 	
 	SingleResponse<List<ClienteEntity>> consultarClientes();
 	SingleResponse<ClienteEntity> consultarClientePorId(Integer clienteid);
-	SingleResponse<ClienteEntity> crearCliente(ClienteDireccion clienteDireccion);
+	SingleResponse<ClienteEntity> crearCliente(ClienteEntity clienteDireccion);
 	SingleResponse<ClienteEntity> eliminarCliente(Integer id);
 	SingleResponse<ClienteEntity> actualizarCliente(ClienteEntity cliente);
 	SingleResponse<List<ClienteEntity>> consultarClientesActivos();

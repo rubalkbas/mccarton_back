@@ -61,7 +61,7 @@ public class ClientesController {
 	
 
 	@PostMapping(path = "/nuevoCliente", consumes =MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<ClienteEntity>> crearCliente(@ModelAttribute ClienteDireccion cliente){
+	public ResponseEntity<SingleResponse<ClienteEntity>> crearCliente(@ModelAttribute ClienteEntity cliente){
 		SingleResponse<ClienteEntity> response = new SingleResponse<>();
 		response = clienteService.crearCliente(cliente);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok

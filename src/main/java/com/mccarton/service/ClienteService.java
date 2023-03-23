@@ -29,6 +29,7 @@ import com.mccarton.repository.IDireccionRepository;
 public class ClienteService implements IClienteService {
 
 	public static final Integer ESTATUS_ACTIVO = 1;
+	public static final Integer ESTATUS_INACTIVO = 0;
 	private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 
 	@Autowired
@@ -67,7 +68,7 @@ public class ClienteService implements IClienteService {
 
 	@Transactional
 	@Override
-	public SingleResponse<ClienteEntity> crearCliente(ClienteDireccion clienteDireccion) {
+	public SingleResponse<ClienteEntity> crearCliente(ClienteEntity clienteDireccion) {
 		Optional<ClienteEntity> clienteO = Optional.empty();
 		try {
 			clienteO = clienteRepository.findBycorreoElectronicoIgnoreCase(clienteDireccion.getCorreoElectronico());
@@ -97,7 +98,7 @@ public class ClienteService implements IClienteService {
 		clienteEntity.setApellidoMaterno(clienteDireccion.getApellidoMaterno());
 		clienteEntity.setApellidoPaterno(clienteDireccion.getApellidoPaterno());
 		clienteEntity.setCorreoElectronico(clienteDireccion.getCorreoElectronico());
-		clienteEntity.setEstatus(ESTATUS_ACTIVO);
+		clienteEntity.setEstatus(ESTATUS_INACTIVO);
 		clienteEntity.setNombre(clienteDireccion.getNombre());
 		clienteEntity.setPassword(passwordEncoder.encode(clienteDireccion.getPassword()));
 		clienteEntity.setTelefono(clienteDireccion.getTelefono());
@@ -110,13 +111,13 @@ public class ClienteService implements IClienteService {
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los clientes2 en la BD");
 		}
 
-		try {
-			direccionservice.crearDireccion(clienteDireccion, clienteEntity);
-		} catch (DataAccessException ex) {
-			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
-					ex.getStackTrace());
-			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los clientes2 en la BD");
-		}
+//		try {
+//			direccionservice.crearDireccion(clienteDireccion, clienteEntity);
+//		} catch (DataAccessException ex) {
+//			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+//					ex.getStackTrace());
+//			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los clientes2 en la BD");
+//		}
 
 		SingleResponse<ClienteEntity> response = new SingleResponse<>();
 		response.setOk(true);
