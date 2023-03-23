@@ -3,6 +3,10 @@ package com.mccarton.model.dto;
 
 import java.io.Serializable;
 
+import javax.persistence.Lob;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.mccarton.model.entity.ClienteEntity;
 
@@ -54,4 +58,12 @@ public class ClienteDireccion{
 	
 	private String apellidoMaterno;
 	
+	private String nombreImagen;
+	
+	private String tipoImagen;
+	
+	@Lob
+	private byte[] bytesImagen;
+	
+	private MultipartFile multipartFile;
 }

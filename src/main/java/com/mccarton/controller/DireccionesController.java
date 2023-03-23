@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +36,14 @@ public class DireccionesController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
+	@GetMapping(path = "/consultarDireccion/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<DireccionEntity>> consultarClientePorId(@PathVariable("id") Integer id){
+		
+		SingleResponse<DireccionEntity> response = new SingleResponse<>();
+		response = direccionesService.consultarDireccionePorId(id);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
 	@GetMapping(path = "/consultarDireccionPredeterminada/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<DireccionEntity>> consultarDireccionPredeterminada(@PathVariable("id") Integer id){
 		
@@ -44,14 +53,14 @@ public class DireccionesController {
 	}
 	
 	@DeleteMapping(path = "/eliminarDireccion/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<DireccionEntity>> eliminarCliente(@PathVariable Integer id) {
+	public ResponseEntity<SingleResponse<DireccionEntity>> eliminarDireccion(@PathVariable Integer id) {
 	    SingleResponse<DireccionEntity> response = new SingleResponse<>();
 	    response = direccionesService.eliminarDireccion(id);
 	    return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	@PostMapping(path = "/nuevaDireccion/{idCliente}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<DireccionEntity>> crearCliente(@RequestBody DireccionEntity direccion, ClienteEntity idCliente){
+	@PostMapping(path = "/nuevaDireccion/{idCliente}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<DireccionEntity>> crearDireccion(@ModelAttribute DireccionEntity direccion, ClienteEntity idCliente){
 		SingleResponse<DireccionEntity> response = new SingleResponse<>();
 		response = direccionesService.crearNuevaDireccion(direccion, idCliente);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
@@ -59,7 +68,7 @@ public class DireccionesController {
 	}
 	
 	@PostMapping(path = "/actualizarDireccion/{idCliente}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<DireccionEntity>> actualizarDireccion(@RequestBody DireccionEntity direccion, ClienteEntity idCliente){
+	public ResponseEntity<SingleResponse<DireccionEntity>> actualizarDireccion(@ModelAttribute DireccionEntity direccion, ClienteEntity idCliente){
 		SingleResponse<DireccionEntity> response = new SingleResponse<>();
 		response = direccionesService.actualizarDireccion(direccion, idCliente);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok

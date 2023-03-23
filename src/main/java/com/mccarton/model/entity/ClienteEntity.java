@@ -9,8 +9,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -56,6 +60,19 @@ public class ClienteEntity implements Serializable {
 	@Column(name = "ESTATUS", nullable = false, length = 1)
 	private Integer estatus;
 	
+	@Column(name = "BYTES_IMAGEN", length = 100)
+	@Lob
+	private byte[] bytesImagen;
+	
+	@Column(name = "NOMBRE_IMAGEN", length = 100)
+	private String nombreImagen;
+	
+	@Column(name = "TIPO_IMAGEN", length = 100)
+	private String tipoImagen;
+	
+	@Transient
+	//@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	private transient MultipartFile multipartFile;
 	/**
 	 * Relación Uno a Muchos
 	 * Lista de asuntos

@@ -18,7 +18,6 @@ import com.mccarton.model.dto.ClienteDireccion;
 import com.mccarton.model.dto.SingleResponse;
 import com.mccarton.model.entity.ClienteEntity;
 import com.mccarton.model.entity.DireccionEntity;
-import com.mccarton.model.entity.UsuarioEntity;
 import com.mccarton.repository.IClienteRepository;
 import com.mccarton.repository.IDireccionRepository;
 
@@ -284,6 +283,32 @@ public class DireccionesServices implements IDireccionesServices {
 		response.setMensaje("Se ha guardado al usuario exitosamente.");
 		response.setResponse(direccion);
 		return response;
+	}
+
+	@Transactional
+	@Override
+	public SingleResponse<DireccionEntity> consultarDireccionePorId(Integer direccionid) {
+		Optional<DireccionEntity> oDireccionDb = Optional.empty();
+
+		try {
+			oDireccionDb = direccionesRepository.findById(direccionid);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar el cleinet en la BD");
+		}
+		
+		DireccionEntity clienteEn = oDireccionDb.get();
+
+		if (!oDireccionDb.isEmpty()) {
+			SingleResponse<DireccionEntity> response = new SingleResponse<>();
+			response.setOk(true);
+			response.setMensaje("Se ha obtenido al Cliente exitosamente");
+			response.setResponse(clienteEn);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de cliente en la BD");
+
 	}
 
 }
