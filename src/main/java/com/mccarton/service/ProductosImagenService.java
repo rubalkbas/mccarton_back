@@ -105,6 +105,7 @@ public class ProductosImagenService implements IProductosImagenService{
 			 */
 			r = new SingleResponse<>();
 			r.setResponse(respuestaAlta);
+			r.setMensaje("Se ha guardado el producto " + producto.getNombreProducto() +" exitosamente.");
 			r.setOk(true);
 			return r;
 	}
