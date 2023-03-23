@@ -82,6 +82,9 @@ public class ProductosEntity implements Serializable {
 	@Column(name = "PESO" , length = 5)
 	private Double peso;
 	
+	@Column(name = "ESTATUS", nullable = false, length = 1)
+	private Integer estatus;
+	
 	
 //	/**
 //	 * Relación Uno a Muchos

@@ -2,7 +2,6 @@ package com.mccarton.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +26,8 @@ public class ProductosService implements IProductosService{
 	
 	@Autowired
 	private IProductosRepository productoRepository;
+	
+	
 
 
 	@Transactional
@@ -158,6 +159,7 @@ public class ProductosService implements IProductosService{
 		productoUpdate.setCategoria(producto.getCategoria());
 		productoUpdate.setColor(producto.getColor());
 		productoUpdate.setMaterial(producto.getMaterial());
+		productoUpdate.setEstatus(producto.getEstatus());
 
 		try {
 			productoUpdate = productoRepository.save(productoUpdate);
@@ -172,5 +174,4 @@ public class ProductosService implements IProductosService{
 		response.setResponse(productoUpdate);
 		return response;
 	}
-
 }
