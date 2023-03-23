@@ -54,10 +54,10 @@ public class CategoriasController {
 		return new ResponseEntity<SingleResponse<CategoriasEntity>>(response,HttpStatus.OK);
 	}
 	
-	@PutMapping(value = "/actualizarEstatusCategoria", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<CategoriasEntity>>actualizarEstatusCategoria(@RequestBody CategoriasEntity categoria ){
+	@PutMapping(value = "/actualizarEstatusCategoria", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<CategoriasEntity>>actualizarEstatusCategoria(@RequestParam Integer idCategoria, @RequestParam Integer estatus){
 		SingleResponse<CategoriasEntity> response = new SingleResponse<CategoriasEntity>();
-		response = categoriaService.actualizarEstatusCategoria(categoria);
+		response = categoriaService.actualizarEstatusCategoria(idCategoria,estatus);
 		return new ResponseEntity<SingleResponse<CategoriasEntity>>(response,HttpStatus.OK);
 	}
 	

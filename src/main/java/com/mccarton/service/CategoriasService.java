@@ -124,12 +124,12 @@ public class CategoriasService implements ICategoriaService {
 	}
 
 	@Override
-	public SingleResponse<CategoriasEntity> actualizarEstatusCategoria(CategoriasEntity categoria) {
+	public SingleResponse<CategoriasEntity> actualizarEstatusCategoria(Integer idCategoria, Integer estatus) {
 		
 		Optional<CategoriasEntity> categoriaOpcional = Optional.empty();
 							
 		try {
-			categoriaOpcional = categoriaRepository.findById(categoria.getIdCategorias());
+			categoriaOpcional = categoriaRepository.findById(idCategoria);
 		} catch (DataAccessException excepcion) {
 			log.error("Ha ocurrido un error inesperado. Excepcion {} {}", excepcion,
 					excepcion.getStackTrace());
@@ -137,11 +137,11 @@ public class CategoriasService implements ICategoriaService {
 		}
 		
 		if(categoriaOpcional.isEmpty()) {
-			throw new BusinessException(HttpStatus.BAD_REQUEST, "La Categoria con el ID: "+ categoria.getIdCategorias() + "no se encontro");
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "La Categoria con el ID: "+ idCategoria + "no se encontro");
 		}
 				
 		CategoriasEntity categoriaBorrado = categoriaOpcional.get();
-		categoriaBorrado.setEstatus(categoria.getEstatus());
+		categoriaBorrado.setEstatus(estatus);
 		
 		try {
 			categoriaBorrado = categoriaRepository.save(categoriaBorrado);			
@@ -153,7 +153,7 @@ public class CategoriasService implements ICategoriaService {
 		
 		SingleResponse<CategoriasEntity> response = new SingleResponse<CategoriasEntity>();
 		
-		response.setMensaje("La categoria se elimino correctamente");
+		response.setMensaje("El estatus de la categoria se actualizo correctamente");
 		response.setOk(true);
 		response.setResponse(categoriaBorrado);
 		return response;
