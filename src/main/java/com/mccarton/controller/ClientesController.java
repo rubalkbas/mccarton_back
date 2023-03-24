@@ -100,7 +100,7 @@ public class ClientesController {
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 	
-	@GetMapping(path = "/loginCliente", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/loginCliente", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<ClienteEntity>> loginCliente(@RequestBody ClienteEntity usuario){
 		SingleResponse<ClienteEntity> response = new SingleResponse<>();
 		response = clienteService.loginCliente(usuario);
