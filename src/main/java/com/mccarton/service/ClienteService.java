@@ -1,5 +1,6 @@
 package com.mccarton.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -8,31 +9,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mccarton.exceptions.BusinessException;
+import com.mccarton.model.dto.ClienteDireccion;
 import com.mccarton.model.dto.SingleResponse;
 import com.mccarton.model.entity.ClienteEntity;
-import com.mccarton.model.entity.UsuarioEntity;
 import com.mccarton.repository.IClienteRepository;
+import com.mccarton.repository.IDireccionRepository;
 
 @Service
 public class ClienteService implements IClienteService {
 
+	public static final Integer ESTATUS_ACTIVO = 1;
+	public static final Integer ESTATUS_INACTIVO = 0;
 	private static final Logger log = LoggerFactory.getLogger(ClienteService.class);
 
 	@Autowired
 	private IClienteRepository clienteRepository;
-	
+
+	@Autowired
+	private IDireccionRepository direccionRepository;
+
+	@Autowired
+	private DireccionesServices direccionservice;
+
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Transactional
 	@Override
-	public SingleResponse<List<ClienteEntity>> consultarCliente() {
+	public SingleResponse<List<ClienteEntity>> consultarClientes() {
 		List<ClienteEntity> listaCliente = new ArrayList<>();
 
 		try {
@@ -49,15 +63,15 @@ public class ClienteService implements IClienteService {
 			return response;
 		}
 
-		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de usuarios en la BD");
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de clientes en la BD");
 	}
 
 	@Transactional
 	@Override
-	public SingleResponse<ClienteEntity> crearCliente(ClienteEntity cliente) {
+	public SingleResponse<ClienteEntity> crearCliente(ClienteEntity clienteDireccion) {
 		Optional<ClienteEntity> clienteO = Optional.empty();
 		try {
-			clienteO = clienteRepository.findBycorreoElectronicoIgnoreCase(cliente.getCorreoElectronico());
+			clienteO = clienteRepository.findBycorreoElectronicoIgnoreCase(clienteDireccion.getCorreoElectronico());
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
@@ -66,28 +80,50 @@ public class ClienteService implements IClienteService {
 
 		if (clienteO.isPresent()) {
 			throw new BusinessException(HttpStatus.BAD_REQUEST,
-					"El  correo electrónico " + cliente.getCorreoElectronico() + " ya existe en la BD");
+					"El  correo electrónico " + clienteDireccion.getCorreoElectronico() + " ya existe en la BD");
 		}
 
-		cliente.setApellidoMaterno(cliente.getApellidoMaterno());
-		cliente.setApellidoPaterno(cliente.getApellidoPaterno());
-		cliente.setCorreoElectronico(cliente.getCorreoElectronico());
-		cliente.setEstatus(cliente.getEstatus());
-		cliente.setNombre(cliente.getNombre());
-		cliente.setPassword(cliente.getPassword());
-		cliente.setTelefono(cliente.getTelefono());
+		ClienteEntity clienteEntity = new ClienteEntity();
+
+		if (clienteDireccion.getMultipartFile().isEmpty() || clienteDireccion.getMultipartFile() != null) {
+			clienteEntity.setNombreImagen(clienteDireccion.getMultipartFile().getOriginalFilename());
+			clienteEntity.setTipoImagen(clienteDireccion.getMultipartFile().getContentType());
+			try {
+				clienteEntity.setBytesImagen(clienteDireccion.getMultipartFile().getBytes());
+			} catch (IOException e) {
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "Error al procesar la imagen en el sistema.");
+			}
+		}
+
+		clienteEntity.setApellidoMaterno(clienteDireccion.getApellidoMaterno());
+		clienteEntity.setApellidoPaterno(clienteDireccion.getApellidoPaterno());
+		clienteEntity.setCorreoElectronico(clienteDireccion.getCorreoElectronico());
+		clienteEntity.setEstatus(ESTATUS_INACTIVO);
+		clienteEntity.setNombre(clienteDireccion.getNombre());
+		clienteEntity.setPassword(passwordEncoder.encode(clienteDireccion.getPassword()));
+		clienteEntity.setTelefono(clienteDireccion.getTelefono());
 
 		try {
-			cliente = clienteRepository.save(cliente);
+			clienteEntity = clienteRepository.save(clienteEntity);
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los clientes2 en la BD");
 		}
+
+//		try {
+//			direccionservice.crearDireccion(clienteDireccion, clienteEntity);
+//		} catch (DataAccessException ex) {
+//			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+//					ex.getStackTrace());
+//			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los clientes2 en la BD");
+//		}
+
 		SingleResponse<ClienteEntity> response = new SingleResponse<>();
 		response.setOk(true);
-		response.setMensaje("Se ha guardado al usuario " + cliente.getNombre() + " exitosamente.");
-		response.setResponse(cliente);
+		response.setMensaje("Se ha guardado al cliente " + clienteEntity.getNombre() + " exitosamente.");
+		response.setResponse(clienteEntity);
+		clienteDireccion.setMultipartFile(null);
 		return response;
 	}
 
@@ -104,16 +140,28 @@ public class ClienteService implements IClienteService {
 					ex.getStackTrace());
 		}
 
-		if (clienteO.isPresent()) {
-			clienteRepository.delete(clienteO.get());
-			response.setOk(true);
-			response.setMensaje("Cliente eliminado exitosamente");
-			response.setResponse(clienteO.get());
-			return response;
-		} else {
-			log.error("No se pudo encontrar al cliente con el ID proporcionado");
-			return null;
+		if (!clienteO.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  usuario con Id " + id + " no existe en la BD");
 		}
+
+		try {
+			direccionRepository.deleteCliente(id);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+		}
+
+		try {
+			clienteRepository.delete(clienteO.get());
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+		}
+
+		response.setOk(true);
+		response.setMensaje("Cliente eliminado exitosamente");
+		response.setResponse(clienteO.get());
+		return response;
 
 	}
 
@@ -127,17 +175,18 @@ public class ClienteService implements IClienteService {
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
-			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar el cliente en la BD");
 		}
-		
-		if(!clienteOBd.isPresent()) {
-			throw new BusinessException(HttpStatus.BAD_REQUEST, "El  usuario con Id " + cliente.getNombre() +" no existe en la BD");
+
+		if (!clienteOBd.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST,
+					"El  cliente con Id " + cliente.getNombre() + " no existe en la BD");
 		}
-		
+
 		ClienteEntity clienteDB = clienteOBd.get();
-		
-		validarParmetros(clienteOBd, clienteDB);
-		
+
+		validarParmetros(cliente, clienteDB);
+
 		try {
 			clienteDB = clienteRepository.save(clienteDB);
 		} catch (DataAccessException ex) {
@@ -145,30 +194,85 @@ public class ClienteService implements IClienteService {
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 		}
-		
+
 		SingleResponse<ClienteEntity> response = new SingleResponse<>();
 
 		response.setOk(true);
-		response.setMensaje("Se ha actualizado al usuario " + clienteDB.getNombre() +" exitosamente.");
+		response.setMensaje("Se ha actualizado al cliente " + clienteDB.getNombre() + " exitosamente.");
 		response.setResponse(clienteDB);
 		return response;
 	}
 
-	private void validarParmetros(Optional<ClienteEntity> clienteOBd, ClienteEntity clienteDB) {
-		
-		if (clienteDB.getNombre() != null) {
-			clienteDB.setNombre(clienteDB.getNombre());
+	@Transactional
+	@Override
+	public SingleResponse<ClienteEntity> consultarClientePorId(Integer clienteid) {
+		Optional<ClienteEntity> oClienteDb = Optional.empty();
+
+		try {
+			oClienteDb = clienteRepository.findById(clienteid);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar el cleinet en la BD");
 		}
-		if (clienteDB.getApellidoPaterno() != null) {
-			clienteDB.setApellidoPaterno(clienteDB.getApellidoPaterno());
+
+		ClienteEntity clienteEn = oClienteDb.get();
+
+		if (!oClienteDb.isEmpty()) {
+			SingleResponse<ClienteEntity> response = new SingleResponse<>();
+			response.setOk(true);
+			response.setMensaje("Se ha obtenido al Cliente exitosamente");
+			response.setResponse(clienteEn);
+			return response;
 		}
-		if (clienteDB.getApellidoMaterno() != null) {
-			clienteDB.setApellidoMaterno(clienteDB.getApellidoMaterno());
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de cliente en la BD");
+
+	}
+
+	@Transactional
+	@Override
+	public SingleResponse<List<ClienteEntity>> consultarClientesActivos() {
+		List<ClienteEntity> listaClientes = new ArrayList<>();
+
+		try {
+			listaClientes = clienteRepository
+					.findByEstatusOrderByApellidoPaternoAscApellidoMaternoAscNombreAsc(ESTATUS_ACTIVO);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 		}
-		if (clienteDB.getCorreoElectronico() != null) {
+		if (!listaClientes.isEmpty()) {
+			SingleResponse<List<ClienteEntity>> response = new SingleResponse<>();
+			response.setOk(true);
+			response.setMensaje("Se ha obtenido la lista de usuarios activos exitosamente");
+			response.setResponse(listaClientes);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de clientes activos en la BD");
+	}
+
+	/*
+	 * Metodo para vaidar parametros
+	 */
+	private void validarParmetros(ClienteEntity cliente, ClienteEntity clienteDB) {
+
+		if (cliente.getNombre() != null) {
+			clienteDB.setNombre(cliente.getNombre());
+		}
+
+		if (cliente.getApellidoPaterno() != null) {
+			clienteDB.setApellidoPaterno(cliente.getApellidoPaterno());
+		}
+
+		if (cliente.getApellidoMaterno() != null) {
+			clienteDB.setApellidoMaterno(cliente.getApellidoMaterno());
+		}
+
+		if (cliente.getCorreoElectronico() != null) {
 			Optional<ClienteEntity> clienteOo = Optional.empty();
 			try {
-				clienteOo = clienteRepository.findBycorreoElectronicoIgnoreCase(clienteDB.getCorreoElectronico());
+				clienteOo = clienteRepository.findBycorreoElectronicoIgnoreCase(cliente.getCorreoElectronico());
 			} catch (DataAccessException ex) {
 				log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 						ex.getStackTrace());
@@ -177,17 +281,89 @@ public class ClienteService implements IClienteService {
 			}
 			if (clienteOo.isPresent()) {
 				throw new BusinessException(HttpStatus.BAD_REQUEST,
-						"El  correo electrónico " + clienteDB.getCorreoElectronico() + " ya existe en la BD");
+						"El  correo electrónico " + cliente.getCorreoElectronico() + " ya existe en la BD");
 			}
-			clienteDB.setCorreoElectronico("pedro2@gmail.com");
+			clienteDB.setCorreoElectronico(cliente.getCorreoElectronico());
 		}
-		if (clienteDB.getEstatus() != null) {
-			clienteDB.setEstatus(clienteDB.getEstatus());
+		if (cliente.getEstatus() != null) {
+			clienteDB.setEstatus(cliente.getEstatus());
 		}
-		
-		if(clienteDB.getPassword()!= null) {
-			clienteDB.setPassword(clienteDB.getPassword());
+
+		if (cliente.getPassword() != null) {
+			clienteDB.setPassword(passwordEncoder.encode(cliente.getPassword()));
 		}
+
+		if (!cliente.getMultipartFile().isEmpty() || cliente.getMultipartFile() != null) {
+			clienteDB.setNombreImagen(cliente.getMultipartFile().getOriginalFilename());
+			clienteDB.setTipoImagen(cliente.getMultipartFile().getContentType());
+			try {
+				clienteDB.setBytesImagen(cliente.getMultipartFile().getBytes());
+			} catch (IOException e) {
+				throw new BusinessException(HttpStatus.BAD_REQUEST, "Error al procesar la imagen en el sistema.");
+			}
+		}
+
+	}
+
+	@Transactional
+	@Override
+	public SingleResponse<Page<ClienteEntity>> consultarPorPaginas(int noPagina, String campo, String direccion,
+			String buscar) {
+		int pageSize = 10;
+		Pageable pageable = PageRequest.of(noPagina - 1, pageSize,
+				direccion.equalsIgnoreCase("asc") ? Sort.by(campo).ascending() : Sort.by(campo).descending());
+
+		Page<ClienteEntity> clientePage = Page.empty();
+
+		try {
+			if (buscar != null) {
+				clientePage = clienteRepository.findAll(buscar, pageable);
+			} else {
+				clientePage = clienteRepository.findAll(pageable);
+			}
+
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los clientes en la BD");
+		}
+
+		if (!clientePage.isEmpty()) {
+			SingleResponse<Page<ClienteEntity>> response = new SingleResponse<>();
+			response.setOk(true);
+			response.setMensaje("Se ha obtenido la lista de usuarios activos exitosamente");
+			response.setResponse(clientePage);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros en la página " + noPagina);
+
+	}
+
+	@Override
+	public SingleResponse<ClienteEntity> loginCliente(ClienteEntity cliente) {
+		Optional<ClienteEntity> oClienteDb = Optional.empty();
+		try {
+			oClienteDb = clienteRepository.findByCorreoElectronicoIgnoreCaseAndEstatus(cliente.getCorreoElectronico(),
+					ESTATUS_ACTIVO);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los clientes en la BD");
+		}
+		if (!oClienteDb.isPresent()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST,
+					"No se encontró registro de usuario con el correo electrónico: " + cliente.getCorreoElectronico());
+		}
+		ClienteEntity usuarioDb = oClienteDb.get();
+		String encodedPassword = usuarioDb.getPassword();
+		if (passwordEncoder.matches(cliente.getPassword(), encodedPassword)) {
+			SingleResponse<ClienteEntity> response = new SingleResponse<>();
+			response.setOk(true);
+			response.setMensaje("Login exitoso.");
+			response.setResponse(usuarioDb);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "Contraseña incorrecta");
 	}
 
 }

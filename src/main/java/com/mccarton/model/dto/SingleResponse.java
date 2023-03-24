@@ -1,6 +1,10 @@
 package com.mccarton.model.dto;
 
 import java.io.Serializable;
+import java.util.List;
+
+import com.mccarton.model.entity.ClienteEntity;
+import com.mccarton.model.entity.DireccionEntity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +39,8 @@ public class SingleResponse<R> implements Serializable {
 	 * Objeto de la respuesta
 	 */
 	private transient R response;
+	
+
 	/**
 	 * Determina la respuesta es correcta(true) o contiene errores o
 	 * validaciones(false)
@@ -48,6 +54,9 @@ public class SingleResponse<R> implements Serializable {
 	public SingleResponse() {
 		super();
 	}
+
+
+	
 
 	/**
 	 * Metodo que ingresa a la respuesta la lista de validaciones, este metodo

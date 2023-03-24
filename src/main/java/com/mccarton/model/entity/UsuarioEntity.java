@@ -70,8 +70,9 @@ public class UsuarioEntity implements Serializable{
 	//@JsonManagedReference
 	private RolEntity rol;
 	
-	@Transient
+	
 	//@JsonProperty(access = JsonProperty.Access.READ_ONLY)
+	@Transient
 	private transient MultipartFile multipartFile;
 	
 	@Transient
