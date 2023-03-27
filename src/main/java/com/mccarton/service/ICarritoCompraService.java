@@ -12,5 +12,7 @@ public interface ICarritoCompraService {
 	
 	SingleResponse<CarroComprasEntity> agregarProducto(CarroComprasRequest request);
 	SingleResponse<ResponseListarCarrito> mostrarCarrito(Integer idCliente);
+	SingleResponse<ResponseListarCarrito> actualizarCantidad(CarroComprasRequest request);
+	SingleResponse<ResponseListarCarrito> eliminarProducto(Integer idCarrito);
 
 }

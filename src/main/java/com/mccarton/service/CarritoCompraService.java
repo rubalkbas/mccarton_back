@@ -98,12 +98,7 @@ public class CarritoCompraService implements ICarritoCompraService {
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al agregar el producto en el carrito de compras a la BD");
 		}
-//		double totalEstimado = 0.0d;
-//		List<CarroComprasEntity> listado = listarCarrito(OCliente.get());
-//		for(CarroComprasEntity producto : listado) {
-//			totalEstimado += producto.getSubtotal();
-//		}
-//		log.info(""+totalEstimado);
+
 		SingleResponse<CarroComprasEntity> response = new SingleResponse<>();
 		response.setOk(true);
 		response.setMensaje("Se agrego correctamente el producto en el carrito de compras");
@@ -130,8 +125,6 @@ public class CarritoCompraService implements ICarritoCompraService {
 		List<CarroComprasEntity> listado = new ArrayList<>();
 		
 		listado = listarCarrito(OCliente.get());
-		//Integer cantidadTotal = request.getCantidad();
-		//CarroComprasEntity carrito = new CarroComprasEntity();
 		SingleResponse<ResponseListarCarrito> response = new SingleResponse<>();
 		response.setOk(true);
 		if (listado.isEmpty()) {
@@ -139,7 +132,141 @@ public class CarritoCompraService implements ICarritoCompraService {
 			response.setMensaje("Carrito vacío");
 		}else {
 			double totalEstimado = 0.0d;
-			//List<CarroComprasEntity> listado = listarCarrito(OCliente.get());
+			for(CarroComprasEntity producto : listado) {
+				totalEstimado += producto.getSubtotal();
+			}
+			ResponseListarCarrito carritoDto = new ResponseListarCarrito();
+			carritoDto.setTotalEstimado(totalEstimado);
+			carritoDto.setCarrito(listado);
+			response.setMensaje("Carrito obtenido exitosamente");
+			response.setResponse(carritoDto);
+			log.info(""+totalEstimado);
+		}
+		return response;
+	}
+	
+	
+	@Transactional
+	@Override
+	public SingleResponse<ResponseListarCarrito> actualizarCantidad(CarroComprasRequest request) {
+		Optional<ProductosEntity> OProducto = Optional.empty();
+		
+		try {
+			OProducto = productoRepository.findById(request.getIdProducto());
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar el producto en la BD");
+		}
+		if(OProducto.isEmpty()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontró el producto con el Id " +request.getIdProducto() + "en la BD");
+		}
+		
+		Optional<ClienteEntity> OCliente = Optional.empty();
+		try {
+			OCliente = clienteRepository.findById(request.getIdCliente());
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar el cliente en la BD");
+		}
+		if(OCliente.isEmpty()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontró el cliente con el Id " +request.getIdCliente() + "en la BD");
+		}
+		
+		Optional<CarroComprasEntity> OCarroCompra = Optional.empty();
+		
+		try {
+			OCarroCompra = carroComprasRepository.findByClienteAndProducto(OCliente.get(), OProducto.get());
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar el carrito de compras en la BD");
+		}
+		
+		if (OCarroCompra.isEmpty()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "No existe el producto en el carrito de compras.");
+			
+		}
+		Integer cantidadTotal = request.getCantidad();
+	
+		if (cantidadTotal > OProducto.get().getStock()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "La cantidad de productos("+cantidadTotal+")"
+					+ " excede el número de productos en existencia("+OProducto.get().getStock()+").");
+		}
+		CarroComprasEntity carrito = new CarroComprasEntity();
+		carrito = OCarroCompra.get();
+		
+		carrito.setCantidad(cantidadTotal);
+
+		
+		try {
+			carrito = carroComprasRepository.save(carrito);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al agregar el producto en el carrito de compras a la BD");
+		}
+
+		List<CarroComprasEntity> listado = new ArrayList<>();
+		
+		listado = listarCarrito(OCliente.get());
+		SingleResponse<ResponseListarCarrito> response = new SingleResponse<>();
+		response.setOk(true);
+		if (listado.isEmpty()) {
+			
+			response.setMensaje("Carrito vacío");
+		}else {
+			double totalEstimado = 0.0d;
+			for(CarroComprasEntity producto : listado) {
+				totalEstimado += producto.getSubtotal();
+			}
+			ResponseListarCarrito carritoDto = new ResponseListarCarrito();
+			carritoDto.setTotalEstimado(totalEstimado);
+			carritoDto.setCarrito(listado);
+			response.setMensaje("Carrito obtenido exitosamente");
+			response.setResponse(carritoDto);
+			log.info(""+totalEstimado);
+		}
+		return response;
+	}
+
+	
+	@Transactional
+	@Override
+	public SingleResponse<ResponseListarCarrito> eliminarProducto(Integer idCarrito) {
+		Optional<CarroComprasEntity> OCarroCompra = Optional.empty();
+		
+		try {
+			OCarroCompra = carroComprasRepository.findById(idCarrito);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar el carrito de compras en la BD");
+		}
+		
+		if (OCarroCompra.isEmpty()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "No existe el producto en el carrito de compras.");
+			
+		}
+		
+		try {
+			carroComprasRepository.deleteById(idCarrito);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al eliminar el producto del carrito de compras en la BD");
+		}
+		List<CarroComprasEntity> listado = new ArrayList<>();
+		
+		listado = listarCarrito(OCarroCompra.get().getCliente());
+		SingleResponse<ResponseListarCarrito> response = new SingleResponse<>();
+		response.setOk(true);
+		if (listado.isEmpty()) {
+			
+			response.setMensaje("Carrito vacío");
+		}else {
+			double totalEstimado = 0.0d;
 			for(CarroComprasEntity producto : listado) {
 				totalEstimado += producto.getSubtotal();
 			}
@@ -163,11 +290,12 @@ public class CarritoCompraService implements ICarritoCompraService {
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar el carrito de compras en la BD");
 		}
-//		if(carritoCliente.isEmpty()) {
-//			throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron productos en el carrito de compras del cliente " +cliente.getNombre());
-//		}
+
 		return carritoCliente;
 	}
+
+
+
 
 
 

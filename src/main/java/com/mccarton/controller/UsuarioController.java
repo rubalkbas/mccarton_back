@@ -83,7 +83,7 @@ public class UsuarioController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
-	@GetMapping(path = "/loginUsuario", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(path = "/loginUsuario", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<UsuarioEntity>> loginUsuario(@RequestBody UsuarioEntity usuario){
 		SingleResponse<UsuarioEntity> response = new SingleResponse<>();
 		response = usuarioService.loginUsuario(usuario);
