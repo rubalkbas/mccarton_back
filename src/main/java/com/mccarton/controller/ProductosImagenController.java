@@ -61,8 +61,8 @@ public class ProductosImagenController {
 	}
 	
 	@DeleteMapping(path = "/elimina", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<String>> eliminarProductos(@RequestBody ProductosEntity producto){
-		productosImagenService.eliminaImagenes(producto);
+	public ResponseEntity<SingleResponse<String>> eliminarImagenes(@RequestBody ProductosImagenEntity productoImg){
+		productosImagenService.eliminaImagenes(productoImg);
         SingleResponse<String> response = new SingleResponse<>();
         response.setMensaje("El producto ha sido eliminado exitosamente");
         response.setOk(true);

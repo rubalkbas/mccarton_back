@@ -173,9 +173,9 @@ public class ProductosImagenService implements IProductosImagenService{
 
 
 	@Override
-	public void eliminaImagenes(ProductosEntity producto) {
+	public void eliminaImagenes(ProductosImagenEntity producto) {
 		try {
-			productoImagenRepository.deleteById(producto.getIdProducto());
+			productoImagenRepository.deleteById(producto.getIdImagen());
 		} catch (EmptyResultDataAccessException e) {
 			log.error("El registro no se encuentra en la base de datos {} {}",e.getMessage() + " " + e,
 					e.getStackTrace());
