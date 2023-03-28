@@ -194,11 +194,8 @@ public class CategoriasService implements ICategoriaService {
 		Page<CategoriasEntity> categoriaPage = Page.empty();
 		
 		try {
-
-
-			if(!campoBusqueda.isEmpty()) {
-				log.info("ENtre");
-				log.info(campoBusqueda);
+			
+			if(!campoBusqueda.isEmpty()) {				
 				categoriaPage = categoriaRepository.findAll(campoBusqueda,pageable);
 			}else {
 				categoriaPage = categoriaRepository.findAll(pageable);
