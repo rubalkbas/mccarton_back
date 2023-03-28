@@ -16,7 +16,7 @@ public interface IProductosImagenService {
 
 	SingleResponse<List<ProductosImagenEntity>> consultarProductosImgID(ProductosEntity producto);
 	
-	void eliminaImagenes(ProductosEntity producto);
+	void eliminaImagenes(ProductosImagenEntity producto);
 
 	SingleResponse<ProductosEntity> agregarImagen(RequestAltaProductoBean producto);
 
