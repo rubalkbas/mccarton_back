@@ -1,0 +1,6 @@
+package com.mccarton.model.dto;
+
+public enum EstatusOrden {
+	NUEVO, CANCELADO, EN_PROCESO, EMPACADO, RECOLECTADO, ENVIADO, ENTREGADO, DEVUELTO, PAGADO, REEMBOLSADO
+
+}

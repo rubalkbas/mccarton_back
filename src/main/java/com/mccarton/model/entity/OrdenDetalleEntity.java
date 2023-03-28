@@ -39,6 +39,9 @@ public class OrdenDetalleEntity implements Serializable {
 	@Column(name = "SUBTOTAL", length = 10, nullable = false)
 	private Double subtotal;
 	
+	@Column(name = "PRECIO", length = 10, nullable = false)
+	private Double precio;
+	
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "ID_ORDEN" , nullable = true)
 	@JsonManagedReference
