@@ -103,6 +103,38 @@ public class PreguntaFrecuenteService implements IPreguntaFrecuenteService{
 		response.setResponse(preguntaNueva);
 		return response;
 	}
+	
+	@Override
+	public SingleResponse<PreguntaFrecuente> eliminarPreguntaFrecuente(Integer idPreguntaFrecuente) {
+
+		Optional<PreguntaFrecuente> opcionalPreguntaFrecuente = Optional.empty();
+		
+		try {
+			opcionalPreguntaFrecuente = preguntaFrecuenteRepository.findById(idPreguntaFrecuente);						
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Excepcion {} {}", excepcion.getMessage() + " " + excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.BAD_REQUEST,"Error, no se encontro la pregunta Frecuente");
+		}
+		
+		if(opcionalPreguntaFrecuente.isEmpty()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST,"Error, no se encontro la pregunta Frecuente");
+		}
+		PreguntaFrecuente preguntaFrecuente = opcionalPreguntaFrecuente.get();
+		
+		try {
+			 preguntaFrecuenteRepository.deleteById(preguntaFrecuente.getIdPreguntaFrecuente());
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Excepcion {} {}", excepcion.getMessage() + " " + excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.BAD_REQUEST,"Error, no se pudo eliminar la pregunta Frecuente ");
+		}		
+		
+		SingleResponse<PreguntaFrecuente> response  = new SingleResponse<PreguntaFrecuente>();
+		
+		response.setMensaje("La pregunta " + preguntaFrecuente.getPregunta()  + "se elimino correctamente");
+		response.setOk(true);
+		response.setResponse(preguntaFrecuente);
+		return response;
+	}
 
 	@Override
 	public SingleResponse<PreguntaFrecuente> actualizarEstatusPreguntaFrecuente(Integer idPreguntaFrecuente,Integer estatus) {
@@ -190,6 +222,8 @@ public class PreguntaFrecuenteService implements IPreguntaFrecuenteService{
 		throw new BusinessException(HttpStatus.NOT_FOUND, "No se encontraron preguntas frecuentes");
 		
 	}
+
+	
 	
 	
 	 

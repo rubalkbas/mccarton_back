@@ -12,6 +12,7 @@ public interface IPreguntaFrecuenteService {
 	SingleResponse<List<PreguntaFrecuente>>consultaPreguntaFrecuentes();
 	SingleResponse<PreguntaFrecuente> guardarPreguntaFrecuente(PreguntaFrecuente preguntaFrecuente);
 	SingleResponse<PreguntaFrecuente>actualizarPreguntaFrecuente(PreguntaFrecuente preguntaFrecuente);
+	SingleResponse<PreguntaFrecuente>eliminarPreguntaFrecuente(Integer idPreguntaFrecuente);
 	SingleResponse<PreguntaFrecuente> actualizarEstatusPreguntaFrecuente(Integer idPreguntaFrecuente,Integer estatus);
 	SingleResponse<List<PreguntaFrecuente>> consultarPreguntasFrecuentesActivas();
 	SingleResponse<Page<PreguntaFrecuente>> consultarPorPaginas(Integer numeroPagina, Integer tamanioPagina,
