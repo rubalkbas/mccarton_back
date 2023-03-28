@@ -19,13 +19,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Table(name = "CLIENTES")
-@Getter
-@Setter
+@Data
 public class ClienteEntity implements Serializable {
 
 	/**
@@ -36,7 +36,6 @@ public class ClienteEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID_CLIENTE", length = 6)
-	@JsonBackReference
 	private Integer idCliente;
 	
 	@Column(name = "CORREO_ELECTRONICO", unique = true, nullable = false, length = 50)
@@ -47,6 +46,9 @@ public class ClienteEntity implements Serializable {
 	
 	@Column(name = "CODIGO_VERIFICACION", nullable = false, length = 64)
 	private String codigoVerificacion;
+	
+	@Column(name = "TOKEN", nullable = false, length = 64)
+	private String token;
 	
 	@Column(name = "NOMBRE", nullable = false, length = 50)
 	private String nombre;

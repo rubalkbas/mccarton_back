@@ -16,6 +16,7 @@ import com.mccarton.model.entity.UsuarioEntity;
 public interface IClienteRepository extends JpaRepository<ClienteEntity, Integer> {
 	
 	Optional<ClienteEntity> findBycorreoElectronicoIgnoreCase(String id);
+	Optional<ClienteEntity> findByOnecorreoElectronicoIgnoreCase(String id);
 	Optional<ClienteEntity> findBycodigoVerificacionIgnoreCase(String id);
 	List<ClienteEntity> findByEstatusOrderByApellidoPaternoAscApellidoMaternoAscNombreAsc(Integer estatus);
 	Page<ClienteEntity> findByEstatus(Integer estatus, Pageable pageable);
@@ -25,5 +26,5 @@ public interface IClienteRepository extends JpaRepository<ClienteEntity, Integer
 	Optional<ClienteEntity> findByCorreoElectronicoIgnoreCaseAndEstatus(String correo, Integer estatus);
 	
 	@Query("SELECT d FROM ClienteEntity d WHERE CODIGO_VERIFICACION =:id ")
-	Optional<ClienteEntity> findByClienteActivo(@Param("id") String codigo);
+	Optional<ClienteEntity> findByClienteCodigo(@Param("id") String codigo);
 }
