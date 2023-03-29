@@ -45,9 +45,6 @@ public class ClienteService implements IClienteService {
 	private IDireccionRepository direccionRepository;
 
 	@Autowired
-	private DireccionesServices direccionservice;
-
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Transactional

@@ -16,7 +16,6 @@ import com.mccarton.model.entity.UsuarioEntity;
 public interface IClienteRepository extends JpaRepository<ClienteEntity, Integer> {
 	
 	Optional<ClienteEntity> findBycorreoElectronicoIgnoreCase(String id);
-	Optional<ClienteEntity> findByOnecorreoElectronicoIgnoreCase(String id);
 	Optional<ClienteEntity> findBycodigoVerificacionIgnoreCase(String id);
 	List<ClienteEntity> findByEstatusOrderByApellidoPaternoAscApellidoMaternoAscNombreAsc(Integer estatus);
 	Page<ClienteEntity> findByEstatus(Integer estatus, Pageable pageable);
