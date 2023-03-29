@@ -11,5 +11,7 @@ public interface IColoresService {
 	SingleResponse<ColoresEntity> crearColor(ColoresEntity color);
 	SingleResponse<List<ColoresEntity>> consultarColoresActivos();
 	SingleResponse<ColoresEntity> actualizarEstatusColor(ColoresEntity color);
+	SingleResponse<ColoresEntity>actuzalizarColor(ColoresEntity color);
+	
 
 }
