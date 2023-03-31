@@ -1,5 +1,7 @@
 package com.mccarton.service;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mccarton.exceptions.BusinessException;
+import com.mccarton.model.dto.OrdenDto;
 import com.mccarton.model.dto.SingleResponse;
 import com.mccarton.model.entity.OrdenesEntity;
 import com.mccarton.repository.IOrdenRepository;
@@ -58,6 +61,51 @@ public class OrdenesService implements IOrdenesService{
 			return response;
 		}
 		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros en la página " + noPagina);
+	}
+
+
+	@Transactional
+	@Override
+	public SingleResponse<OrdenDto> detalleOrden(Integer idOrden) {
+		Optional<OrdenesEntity> oOrden = Optional.empty();
+		
+		try {
+			oOrden = ordenRepository.findById(idOrden);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar las órdenes en la BD");
+		}
+		
+		if(oOrden.isEmpty()) {
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "Orden con id " + idOrden + "No fue encontrada en la BD");
+		}
+		SingleResponse<OrdenDto> response = new SingleResponse<>();
+		OrdenesEntity orden = oOrden.get();
+		OrdenDto ordenDto = new OrdenDto();
+		ordenDto.setCliente(orden.getCliente());
+		ordenDto.setDetalles(orden.getOrdenDetalle());
+		ordenDto.setCalle(orden.getCalle());
+		ordenDto.setCiudad(orden.getCiudad());
+		ordenDto.setCodigoPostal(orden.getCodigoPostal());
+		ordenDto.setColonia(orden.getColonia());
+		ordenDto.setEntreCalle1(orden.getEntreCalle1());
+		ordenDto.setEntreCalle2(orden.getEntreCalle2());
+		ordenDto.setEstatusOrden(orden.getEstatusOrden());
+		ordenDto.setFechaOrden(orden.getFechaOrden());
+		ordenDto.setIdOrden(idOrden);
+		ordenDto.setImpuesto(orden.getImpuesto());
+		ordenDto.setMetodoPago(orden.getMetodoPago());
+		ordenDto.setNumeroExterior(orden.getNumeroExterior());
+		ordenDto.setNumeroInterior(orden.getNumeroInterior());
+		ordenDto.setSubTotal(orden.getSubTotal());
+		ordenDto.setTelefono(orden.getTelefono());
+		ordenDto.setTotal(orden.getTotal());
+//		orden.setOrdenes(orden.getOrdenes());
+		response.setOk(true);
+		response.setMensaje("Se obtuvo el detalle de la orden exitosamente");
+		response.setResponse(ordenDto);
+		return response;
 	}
 
 }

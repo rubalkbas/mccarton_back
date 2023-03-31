@@ -36,7 +36,6 @@ public class ClienteEntity implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID_CLIENTE", length = 6)
-	@JsonBackReference
 	private Integer idCliente;
 	
 	@Column(name = "CORREO_ELECTRONICO", unique = true, nullable = false, length = 50)
