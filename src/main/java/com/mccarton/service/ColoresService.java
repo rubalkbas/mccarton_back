@@ -131,4 +131,38 @@ public class ColoresService implements IColoresService{
 		return response;
 	}
 
+	@Override
+	public SingleResponse<ColoresEntity> actuzalizarColor(ColoresEntity color) {
+		Optional<ColoresEntity> opcionColor = Optional.empty();
+		
+		try {
+			opcionColor = colorRepository.findById(color.getIdColor());
+		} catch (DataAccessException excepcion) {			
+			log.error("Ha ocurrido un error inesperado. Excepction {} {} ", excepcion.getMessage() + ""  + excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al buscar el color existente");
+		}
+		if(opcionColor.isEmpty()) {
+			throw new BusinessException(HttpStatus.NOT_FOUND, "El color no existe en la base de datos");
+		}
+		
+		ColoresEntity colorNuevo = opcionColor.get();
+		colorNuevo.setCodigoHexadecimal(color.getCodigoHexadecimal());
+		colorNuevo.setDescripcionColor(color.getDescripcionColor());
+		colorNuevo.setNombreColor(color.getNombreColor());
+		colorNuevo.setEstatus(color.getEstatus());
+		
+		try {
+			colorNuevo = colorRepository.save(colorNuevo);
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Excepction {} {} ", excepcion.getMessage() + ""  + excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al actulizar el color");
+		}
+		
+		SingleResponse<ColoresEntity> response = new SingleResponse<ColoresEntity>();
+		response.setMensaje("El color " + color.getNombreColor() + " se actualizo correctamente");
+		response.setOk(true);
+		response.setResponse(colorNuevo);		
+		return response;
+	}
+
 }

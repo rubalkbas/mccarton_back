@@ -24,35 +24,41 @@ import com.mccarton.service.IColoresService;
 public class ColoresControlller {
 	
 	@Autowired
-	private IColoresService ColoresService;
+	private IColoresService coloresService;
 
 	
 	@GetMapping(path = "/todos", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<List<ColoresEntity>>> listarColores(){
 		SingleResponse<List<ColoresEntity>> response = new SingleResponse<>();
-		response = ColoresService.consultarColores();
-		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+		response = coloresService.consultarColores();
+		return new ResponseEntity<SingleResponse<List<ColoresEntity>>>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 	
 	@PostMapping(path = "/nuevoColor", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<ColoresEntity>> crearColor (@RequestBody  ColoresEntity color){
 		SingleResponse<ColoresEntity> response = new SingleResponse<>();
-		response = ColoresService.crearColor(color);
-		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+		response = coloresService.crearColor(color);
+		return new ResponseEntity<SingleResponse<ColoresEntity>>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 	
 	@GetMapping(path = "/todosActivos", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<List<ColoresEntity>>> listarColoresActivos(){
 		SingleResponse<List<ColoresEntity>> response = new SingleResponse<>();
-		response = ColoresService.consultarColoresActivos();
-		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+		response = coloresService.consultarColoresActivos();
+		return new ResponseEntity<SingleResponse<List<ColoresEntity>>>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 	
 	@PutMapping(path = "/actualizarEstatusColor", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<ColoresEntity>> actualizaEstatusColor(@RequestBody ColoresEntity color){
 		SingleResponse<ColoresEntity> response = new SingleResponse<>();
-		response = ColoresService.actualizarEstatusColor(color);
-		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+		response = coloresService.actualizarEstatusColor(color);
+		return new ResponseEntity<SingleResponse<ColoresEntity>>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
+	}
+	
+	@PutMapping(path = "/actualizarColor",consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<ColoresEntity>> actualizarColor (@RequestBody ColoresEntity colorNuevo){
+		SingleResponse<ColoresEntity> response = coloresService.actuzalizarColor(colorNuevo);
+		return new ResponseEntity<SingleResponse<ColoresEntity>>(response,HttpStatus.OK);
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.mccarton.config;
 
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,9 +24,35 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class WebSecurityConfig {
 	
+
 	private final ClienteDetailServiceImpl clienteDetailsService;
 	private final UsuarioDetailsServiceImpl usuarioDetailsService;
 	private final JWTAuthorizationFilter jwtAuthorizationFilter;
+
+//	@Autowired
+//	private UserDetailsService userDetailsService;
+
+//	@Override
+//	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//		auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
+//		
+//	}
+//
+////	@Bean
+////	public UserDetailsService userDetailsService() {
+////		return new UserDetailsServiceImp();
+////	}
+//	@Override
+//	protected void configure(HttpSecurity http) throws Exception {
+//		//http.authorizeRequests().anyRequest().permitAll();
+//		http.csrf().disable().authorizeRequests().anyRequest().permitAll();
+////		http.authorizeRequests().
+////		antMatchers("/usuarios").authenticated().
+////		anyRequest().permitAll().and()
+////		.formLogin();
+////		http.authorizeRequests().anyRequest().authenticated().and().httpBasic();
+//	}
+
 	
 	@Bean
 	SecurityFilterChain filterChainUser(HttpSecurity http, @Qualifier("clienteAuthManager") AuthenticationManager clienteAuthManager, @Qualifier("usuarioAuthManager") AuthenticationManager authManagerUsuario) throws Exception {

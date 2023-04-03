@@ -2,12 +2,16 @@ package com.mccarton.model.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,6 +20,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -43,15 +49,6 @@ public class OrdenesEntity implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID_ORDEN", length = 1)
 	private Integer idOrden;
-	
-//	@Column(name = "NOMBRE", nullable = false, length = 50)
-//	private String nombreCliente;
-//	
-//	@Column(name = "APELLIDO_PATERNO", nullable = false, length = 30)
-//	private String apellidoPaterno;
-//	
-//	@Column(name = "APELLIDO_MATERNO", length = 30)
-//	private String apellidoMaterno;
 	
 	@Column(name = "CALLE", nullable = false, length = 50)
 	private String calle;
@@ -107,7 +104,8 @@ public class OrdenesEntity implements Serializable{
 	 * Relación Uno a Muchos
 	 * Lista de asuntos
 	 * */
-	@OneToMany(mappedBy = "orden")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "orden")
+//	@Fetch(value = FetchMode.SUBSELECT)
 	@JsonBackReference
-	private List<OrdenDetalleEntity> ordenes;
+	private Set<OrdenDetalleEntity> ordenDetalle = new HashSet<>();
 }

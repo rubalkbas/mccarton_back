@@ -40,6 +40,9 @@ public class ColoresEntity implements Serializable {
 	@Column(name = "NOMBRE", length = 50, unique = true, nullable = false)
 	private String nombreColor;
 	
+	@Column(name = "CODIGO_HEXADECIMAL",length = 50)
+	private String codigoHexadecimal;
+	
 	@Column(name = "ESTATUS", nullable = false, length = 1)
 	private Integer estatus;
 	

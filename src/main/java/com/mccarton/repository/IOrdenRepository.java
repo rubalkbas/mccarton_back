@@ -14,7 +14,6 @@ public interface IOrdenRepository extends JpaRepository<OrdenesEntity, Integer> 
 			+ "o.numeroExterior LIKE %?1% OR o.codigoPostal LIKE %?1% OR "
 			+ "o.colonia LIKE %?1% OR o.ciudad LIKE %?1% OR "
 			+ "o.metodoPago LIKE %?1% OR o.estatusOrden LIKE %?1%")
-	//		+ "JOIN ClienteEntity c WHERE o.id_cliente = c.id_cliente")
 	Page<OrdenesEntity> findAll(String search, Pageable pageable);
 
 }

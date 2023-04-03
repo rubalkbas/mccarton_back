@@ -13,13 +13,13 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Table(name = "ORDEN_DETALLE")
-@Getter
-@Setter
+@Data
 
 public class OrdenDetalleEntity implements Serializable {
 	
@@ -43,13 +43,13 @@ public class OrdenDetalleEntity implements Serializable {
 	private Double precio;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "ID_ORDEN" , nullable = true)
+	@JoinColumn(name = "ID_ORDEN" , nullable = false)
 	@JsonManagedReference
 	private OrdenesEntity orden;
 	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "ID_PRODUCTO" , nullable = true)
-	@JsonManagedReference
+	@JoinColumn(name = "ID_PRODUCTO" , nullable = false)
+//	@JsonManagedReference
 	private ProductosEntity producto;
 
 }
