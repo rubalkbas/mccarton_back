@@ -1,4 +1,4 @@
-package com.mccarton.security;
+package com.mccarton.config;
 
 import lombok.Data;
 
