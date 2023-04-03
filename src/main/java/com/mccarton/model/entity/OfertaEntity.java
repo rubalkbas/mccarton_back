@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -52,6 +53,10 @@ public class OfertaEntity {
 	
 	@Column(name = "ESTATUS",length = 1)
 	private Integer estatus;
+	
+	//para que el no se guarde en la base de datos
+	@Transient
+	private Double precioConOferta;
 	
 	@OneToOne(optional = false)
 	@JoinColumn(name = "ID_PRODUCTO")

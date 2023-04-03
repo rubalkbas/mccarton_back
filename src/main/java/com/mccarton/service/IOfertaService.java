@@ -1,5 +1,6 @@
 package com.mccarton.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.mccarton.model.dto.SingleResponse;
@@ -12,4 +13,5 @@ public interface IOfertaService {
 	SingleResponse<OfertaEntity> actualizarOferta(OfertaEntity oferta, Integer idProductoS);
 	SingleResponse<List<OfertaEntity>> consultarTodosActivos();
 	SingleResponse<OfertaEntity> actualizarOfertaEstatus(Integer idOferta, Integer estatus);
+	void actualizarOfertasVencidas();
 }
