@@ -55,7 +55,7 @@ public class OfertaEntity {
 	private Integer estatus;
 	
 	//para que el no se guarde en la base de datos
-	@Transient
+	@Column(name = "PRECIO_OFERTA")
 	private Double precioConOferta;
 	
 	@OneToOne(optional = false)

@@ -172,7 +172,11 @@ public class OrdenesService implements IOrdenesService{
 			OrdenDetalleEntity ordenDetalle = new OrdenDetalleEntity();
 			ordenDetalle.setCantidad(carroProducto.getCantidad());
 			ordenDetalle.setOrden(ordenGuardada);
-			ordenDetalle.setPrecio(carroProducto.getProducto().getPrecioVenta());
+			if(carroProducto.getProducto().getPrecioOferta() != null) {
+				ordenDetalle.setPrecio(carroProducto.getProducto().getPrecioOferta());
+			}else {
+				ordenDetalle.setPrecio(carroProducto.getProducto().getPrecioVenta());
+			}
 			ordenDetalle.setProducto(carroProducto.getProducto());
 			ordenDetalle.setSubtotal(carroProducto.getSubtotal());
 			try {
