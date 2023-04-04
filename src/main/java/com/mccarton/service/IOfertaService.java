@@ -12,4 +12,6 @@ public interface IOfertaService {
 	SingleResponse<OfertaEntity> actualizarOferta(OfertaEntity oferta, Integer idProductoS);
 	SingleResponse<List<OfertaEntity>> consultarTodosActivos();
 	SingleResponse<OfertaEntity> actualizarOfertaEstatus(Integer idOferta, Integer estatus);
+	SingleResponse<OfertaEntity> busquedaPorIdProducto(Integer idProducto);
+	void actualizarOfertasVencidas();
 }

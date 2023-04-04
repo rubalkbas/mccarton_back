@@ -2,6 +2,7 @@ package com.mccarton.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.mccarton.exceptions.BusinessException;
@@ -41,16 +43,30 @@ public class OfertaService implements IOfertaService{
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar las ofertas en la base de datos");
 		}
 		SingleResponse<List<OfertaEntity>> response = new SingleResponse<List<OfertaEntity>>();
+		
+		
 		if(!listaOfertas.isEmpty()) {
-			response.setResponse(listaOfertas);
+			 List<OfertaEntity> nuevaListaOferta = obtenerPrecioOferta(listaOfertas);
+			response.setResponse(nuevaListaOferta);
 			response.setOk(true);
 			response.setResponse(listaOfertas);
 			return response;
 
 		}
 		
-		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron ofertas en la Base de datos");
-
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron ofertas en la Base de datos");		
+	}
+	
+	private List<OfertaEntity> obtenerPrecioOferta(List<OfertaEntity> lista) {
+		List<OfertaEntity> nuevoListaOferta = new ArrayList<OfertaEntity>();
+		for (OfertaEntity ofertaEntity : lista) {
+			Integer descuentoPorcentaje = ofertaEntity.getDescuentoEnPorcentaje();
+			Double precioVenta = ofertaEntity.getProducto().getPrecioVenta();
+			Double precioConOferta = precioVenta - (precioVenta * descuentoPorcentaje / 100);
+			ofertaEntity.setPrecioConOferta(precioConOferta);
+			nuevoListaOferta.add(ofertaEntity);			
+		}
+		return nuevoListaOferta;
 		
 	}
 
@@ -206,6 +222,51 @@ public class OfertaService implements IOfertaService{
 		response.setMensaje("El estatus de la oferta se actualizo correctamente");
 		response.setOk(true);
 		response.setResponse(ofertaNueva);
+		return response;
+	}
+
+	@Override
+    @Scheduled(fixedDelay = 43200000) // se ejecuta cada hora
+	public void actualizarOfertasVencidas() {
+		List<OfertaEntity> listaOfertas = new ArrayList<OfertaEntity>();		
+		
+		try {
+			listaOfertas = ofertaRepository.findByFechaFinBeforeAndEstatusNot(LocalDateTime.now(),0);			
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Excepcion {} {} " ,excepcion.getMessage()
+					+ excepcion.getStackTrace());
+ 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al buscar las ofertas en la BD");		
+ 			
+		}
+		if(!listaOfertas.isEmpty()) {
+			for (OfertaEntity ofertaEntity : listaOfertas) {
+				ofertaEntity.setEstatus(0);
+				ofertaRepository.save(ofertaEntity);
+			}
+		}		
+			
+	}
+
+	@Override
+	public SingleResponse<OfertaEntity> busquedaPorIdProducto(Integer idProducto) {
+		Optional<OfertaEntity> ofertaOpcional = Optional.empty();
+				
+		try {
+			
+			ofertaOpcional = ofertaRepository.findByProductoAndIdProducto(idProducto);
+			
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Excepción {} {}", excepcion.getMessage() + excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro al buscar por el id del producto");
+		}
+		if(ofertaOpcional.isEmpty()) {
+			throw new BusinessException(HttpStatus.NOT_FOUND, "La oferta con el id producto no se encontro");
+		}
+		
+		SingleResponse<OfertaEntity> response = new SingleResponse<OfertaEntity>();
+		response.setMensaje("La busqueda se realizó correctamente");
+		response.setResponse(ofertaOpcional.get());
+		response.setOk(true);
 		return response;
 	}
 
