@@ -41,11 +41,11 @@ public class RegistroController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     
-    @PostMapping(path = "/password/{codigo}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SingleResponse<ClienteEntity>> resetPassword(@ModelAttribute ClienteEntity user, @PathVariable("codigo") String codigo) throws MessagingException {
+    @PostMapping(path = "/password/{contraseña}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SingleResponse<ClienteEntity>> resetPassword(@ModelAttribute ClienteEntity user, @PathVariable("contraseña") String contraseña) throws MessagingException {
     	
     	SingleResponse<ClienteEntity> response = new SingleResponse<>();
-    	response = registroService.confirmPassword(user,codigo);
+    	response = registroService.confirmPassword(user,contraseña);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

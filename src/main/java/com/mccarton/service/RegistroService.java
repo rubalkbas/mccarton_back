@@ -208,7 +208,6 @@ public class RegistroService implements IRegistroService {
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error alcambiar la contraseña en la BD");
 		}		
-		log.info(clienetO.get().getPassword());
 
 		SingleResponse<ClienteEntity> response = new SingleResponse<>();
 		response.setOk(true);
