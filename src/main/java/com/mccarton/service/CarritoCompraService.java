@@ -128,8 +128,8 @@ public class CarritoCompraService implements ICarritoCompraService {
 		SingleResponse<ResponseListarCarrito> response = new SingleResponse<>();
 		response.setOk(true);
 		if (listado.isEmpty()) {
-			
-			response.setMensaje("Carrito vacío");
+			throw new BusinessException(HttpStatus.BAD_REQUEST, "Carrito vacío");
+//			response.setMensaje("Carrito vacío");
 		}else {
 			double totalEstimado = 0.0d;
 			for(CarroComprasEntity producto : listado) {

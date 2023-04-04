@@ -18,6 +18,10 @@ public class CheckOutService implements ICheckOutService{
 	
 	
 	private static final Logger log = LoggerFactory.getLogger(CheckOutService.class);
+	
+	private final static String MX_CURRENCY_CODE = "MXN";
+	
+	private final static String CLIENT_ID = "AVkh3mDyLOq0pV1FLzEK6-0KWlvwUwiVCq8riWQZdg3XS_E1ILnzY3Dkt75KWSz92iv5dILuXR_z9wqh";
 
 	@Autowired
 	private IDireccionesServices direccionesServices;
@@ -28,9 +32,10 @@ public class CheckOutService implements ICheckOutService{
 
 	@Override
 	public SingleResponse<CheckOutInfo> prepararCheckOut(Integer idCliente) {
-		log.info("Entrada al service CheckOut");
-		DireccionEntity direccionPredeterminada = direccionesServices.consultarDireccionDefecto(idCliente).getResponse();
+		
 		ResponseListarCarrito carrito = carritoCompraService.mostrarCarrito(idCliente).getResponse();
+		DireccionEntity direccionPredeterminada = direccionesServices.consultarDireccionDefecto(idCliente).getResponse();
+		
 		CheckOutInfo checkOutInfo = new CheckOutInfo();
 		checkOutInfo.setCarrito(carrito);
 		double totalProductos, iva, totalCompra;
@@ -41,6 +46,9 @@ public class CheckOutService implements ICheckOutService{
 		checkOutInfo.setIva(iva);
 		checkOutInfo.setPagoTotal(totalCompra);
 		checkOutInfo.setDireccion(direccionPredeterminada);
+		checkOutInfo.setCliente(carrito.getCarrito().get(0).getCliente());
+		checkOutInfo.setPaypalCurrencyCode(MX_CURRENCY_CODE);
+		checkOutInfo.setPaypalClientId(CLIENT_ID);
 		SingleResponse<CheckOutInfo> response = new SingleResponse<>();
 		response.setMensaje("Check Out Info");
 		response.setOk(true);

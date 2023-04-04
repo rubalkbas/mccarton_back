@@ -2,6 +2,7 @@ package com.mccarton.model.dto;
 
 import java.io.Serializable;
 
+import com.mccarton.model.entity.ClienteEntity;
 import com.mccarton.model.entity.DireccionEntity;
 
 import lombok.Getter;
@@ -22,8 +23,15 @@ public class CheckOutInfo implements Serializable{
 	
 	private double pagoTotal;
 	
+	private String paypalClientId;
+	
+	private String paypalCurrencyCode;
+	
 	private DireccionEntity direccion;
 	
 	private ResponseListarCarrito carrito;
+	
+	private ClienteEntity cliente;
+	
 
 }

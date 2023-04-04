@@ -7,12 +7,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mccarton.model.dto.CarroComprasRequest;
+import com.mccarton.model.dto.CrearOrdenRequest;
 import com.mccarton.model.dto.OrdenDto;
 import com.mccarton.model.dto.SingleResponse;
+import com.mccarton.model.entity.CarroComprasEntity;
 import com.mccarton.model.entity.OrdenesEntity;
 import com.mccarton.service.IOrdenesService;
 
@@ -38,6 +43,13 @@ public class OrdenesController {
 		SingleResponse<OrdenDto> response = new SingleResponse<>();
 		response = ordenesService.detalleOrden(idOrden);
 		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+	
+	@PostMapping(path = "/crearOrden", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<OrdenDto>> crearOrden(@RequestBody CrearOrdenRequest request){
+		SingleResponse<OrdenDto> response = new SingleResponse<>();
+		response = ordenesService.crearOrden(request);
+		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
 
 }
