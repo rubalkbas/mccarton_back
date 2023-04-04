@@ -40,6 +40,14 @@ public class RegistroController {
     	response = registroService.registerUser(user);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    
+    @PostMapping(path = "/password/{contraseña}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SingleResponse<ClienteEntity>> resetPassword(@ModelAttribute ClienteEntity user, @PathVariable("contraseña") String contraseña) throws MessagingException {
+    	
+    	SingleResponse<ClienteEntity> response = new SingleResponse<>();
+    	response = registroService.confirmPassword(user,contraseña);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
     @GetMapping(path = "/confirmar/{idUsuario}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> confirmRegistration(@PathVariable("idUsuario") String idUsuario) {

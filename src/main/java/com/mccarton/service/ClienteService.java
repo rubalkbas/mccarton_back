@@ -2,8 +2,10 @@ package com.mccarton.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +16,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mccarton.exceptions.BusinessException;
 import com.mccarton.model.dto.ClienteDireccion;
+import com.mccarton.model.dto.ClienteResponse;
 import com.mccarton.model.dto.SingleResponse;
 import com.mccarton.model.entity.ClienteEntity;
 import com.mccarton.repository.IClienteRepository;
 import com.mccarton.repository.IDireccionRepository;
+
 
 @Service
 public class ClienteService implements IClienteService {
@@ -39,9 +45,6 @@ public class ClienteService implements IClienteService {
 	private IDireccionRepository direccionRepository;
 
 	@Autowired
-	private DireccionesServices direccionservice;
-
-	@Autowired
 	private PasswordEncoder passwordEncoder;
 
 	@Transactional
@@ -51,10 +54,11 @@ public class ClienteService implements IClienteService {
 
 		try {
 			listaCliente = clienteRepository.findAll();
-		} catch (Exception ex) {
+		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
 		}
+		
 		if (!listaCliente.isEmpty()) {
 			SingleResponse<List<ClienteEntity>> response = new SingleResponse<>();
 			response.setOk(true);
@@ -102,6 +106,8 @@ public class ClienteService implements IClienteService {
 		clienteEntity.setNombre(clienteDireccion.getNombre());
 		clienteEntity.setPassword(passwordEncoder.encode(clienteDireccion.getPassword()));
 		clienteEntity.setTelefono(clienteDireccion.getTelefono());
+		clienteEntity.setToken(clienteDireccion.getToken());
+		
 
 		try {
 			clienteEntity = clienteRepository.save(clienteEntity);
@@ -355,6 +361,11 @@ public class ClienteService implements IClienteService {
 					"No se encontró registro de usuario con el correo electrónico: " + cliente.getCorreoElectronico());
 		}
 		ClienteEntity usuarioDb = oClienteDb.get();
+		
+//		String token = getJWTToken(usuarioDb.getCorreoElectronico());
+//		
+//		usuarioDb.setToken(token);
+		
 		String encodedPassword = usuarioDb.getPassword();
 		if (passwordEncoder.matches(cliente.getPassword(), encodedPassword)) {
 			SingleResponse<ClienteEntity> response = new SingleResponse<>();
@@ -365,5 +376,30 @@ public class ClienteService implements IClienteService {
 		}
 		throw new BusinessException(HttpStatus.BAD_REQUEST, "Contraseña incorrecta");
 	}
+	
+	
+//	private String getJWTToken(String username) {
+//		String secretKey = "mySecretKey";
+//		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
+//				.commaSeparatedStringToAuthorityList("ROLE_USER");//Creamos la lista con los Roles de los usuarios  
+//		
+//		String token = Jwts
+//				.builder()
+//				.setId("softtekJWT")//establecemos unidentificador para cada token
+//				.setSubject(username)//Se identifica el sujeto del Token es decir, la entidad o el usuario al que se refiere el token.
+//				.claim("authorities",
+//						grantedAuthorities.stream()
+//								.map(GrantedAuthority::getAuthority)
+//								.collect(Collectors.toList()))
+//				.setIssuedAt(new Date(System.currentTimeMillis()))// establece la fecha y hora en que se emitió el token como la fecha y hora actual,
+//				.setExpiration(new Date(System.currentTimeMillis() + 600000))//Establece el tiempo de expiracion del token (10 min)
+//				.signWith(SignatureAlgorithm.HS512, //especifica el algoritmo de firma utilizado para firmar el token y la clave secreta utilizada para la firma
+//						secretKey.getBytes()).compact();//se utiliza para "compactar" los datos del token JWT y devolverlos como una cadena de texto. Esto significa que se eliminan los espacios en blanco y otros caracteres innecesarios;
+//
+//		return "Bearer " + token;
+//	}
+	
+	
+	
 
 }

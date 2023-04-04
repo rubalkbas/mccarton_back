@@ -40,7 +40,6 @@ public class SingleResponse<R> implements Serializable {
 	 */
 	private transient R response;
 	
-
 	/**
 	 * Determina la respuesta es correcta(true) o contiene errores o
 	 * validaciones(false)
