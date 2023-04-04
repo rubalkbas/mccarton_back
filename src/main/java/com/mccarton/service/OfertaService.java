@@ -247,5 +247,28 @@ public class OfertaService implements IOfertaService{
 			
 	}
 
+	@Override
+	public SingleResponse<OfertaEntity> busquedaPorIdProducto(Integer idProducto) {
+		Optional<OfertaEntity> ofertaOpcional = Optional.empty();
+				
+		try {
+			
+			ofertaOpcional = ofertaRepository.findByProductoAndIdProducto(idProducto);
+			
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Excepción {} {}", excepcion.getMessage() + excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro al buscar por el id del producto");
+		}
+		if(ofertaOpcional.isEmpty()) {
+			throw new BusinessException(HttpStatus.NOT_FOUND, "La oferta con el id producto no se encontro");
+		}
+		
+		SingleResponse<OfertaEntity> response = new SingleResponse<OfertaEntity>();
+		response.setMensaje("La busqueda se realizó correctamente");
+		response.setResponse(ofertaOpcional.get());
+		response.setOk(true);
+		return response;
+	}
+
 	
 }

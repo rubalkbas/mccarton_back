@@ -51,11 +51,16 @@ public class OfertaController {
 		SingleResponse<OfertaEntity> response = ofertaService.actualizarOfertaEstatus(idOferta, estatus);
 		return new ResponseEntity<SingleResponse<OfertaEntity>>(response, HttpStatus.OK);
 	}
-	
-	
+		
 	@GetMapping(value = "/consultarTodosActivos", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<List<OfertaEntity>>> consultarTodosActivos(){
 		SingleResponse<List<OfertaEntity>> response = ofertaService.consultarTodosActivos();
 		return new ResponseEntity<SingleResponse<List<OfertaEntity>>>(response, HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "/consultarPorIdProducto",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<OfertaEntity>> buscarPorIdProducto(@RequestParam Integer idProducto){
+		SingleResponse<OfertaEntity> response = ofertaService.busquedaPorIdProducto(idProducto);
+		return new ResponseEntity<SingleResponse<OfertaEntity>>(response, HttpStatus.OK);
 	}
 }
