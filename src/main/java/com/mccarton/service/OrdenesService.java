@@ -1,9 +1,7 @@
 package com.mccarton.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,9 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.mccarton.exceptions.BusinessException;
 import com.mccarton.model.dto.CrearOrdenRequest;
 import com.mccarton.model.dto.EstatusOrden;
+import com.mccarton.model.dto.OrdenActualizarDTO;
 import com.mccarton.model.dto.OrdenDto;
 import com.mccarton.model.dto.ResponseListarCarrito;
 import com.mccarton.model.dto.SingleResponse;
@@ -30,6 +30,7 @@ import com.mccarton.model.entity.DireccionEntity;
 import com.mccarton.model.entity.OrdenDetalleEntity;
 import com.mccarton.model.entity.OrdenesEntity;
 import com.mccarton.repository.ICarroComprasRepository;
+import com.mccarton.repository.IClienteRepository;
 import com.mccarton.repository.IOrdenDetalleRepository;
 import com.mccarton.repository.IOrdenRepository;
 
@@ -55,6 +56,8 @@ public class OrdenesService implements IOrdenesService{
 	@Autowired
 	private IOrdenDetalleRepository ordenDetalleRepository;
 
+	@Autowired
+	private IClienteRepository clienteRepository;
 
 	@Transactional
 	@Override
@@ -200,5 +203,149 @@ public class OrdenesService implements IOrdenesService{
 		
 		return detalleOrden(ordenGuardada.getIdOrden());
 	}
+
+
+//	@Override
+//	public SingleResponse<OrdenDetalleEntity> agregarProductoOrden(Integer idOrdenDetalle, ProductosEntity producto) {
+//
+//		Optional<OrdenDetalleEntity> ordenOpcional = Optional.empty();
+//		
+//		try {
+//			ordenOpcional = ordenDetalleRepository.findById(idOrdenDetalle);
+//		} catch (DataAccessException excepcion) {
+//			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+//					excepcion.getStackTrace());
+//			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al buscar por el id de la ordern detalle en la BD");
+//		}
+//		OrdenDetalleEntity ordenDetalle = ordenOpcional.get()
+//		
+//		
+//		return null;
+//	}
+
+
+	@Override
+	public SingleResponse<OrdenesEntity> eliminarOrden(Integer idOrden) {
+		Optional<OrdenesEntity> opcionalOrden = Optional.empty();
+		
+		try {
+			opcionalOrden = ordenRepository.findById(idOrden);
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al buscar el id de la orden en la BD");
+		}
+		
+		OrdenesEntity orden = opcionalOrden.get();
+		
+		for (OrdenDetalleEntity data : orden.getOrdenDetalle()) {
+			try {
+				ordenDetalleRepository.deleteById(data.getIdOrdenDetalle());
+			} catch (DataAccessException excepcion) {
+				log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+						excepcion.getStackTrace());
+				throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al buscar el id de la orden en la BD");
+			}
+		}
+						
+		
+		
+		
+		try {
+			ordenRepository.deleteById(opcionalOrden.get().getIdOrden());
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al eliminar de la orden de BD");
+		}
+		
+		SingleResponse<OrdenesEntity> response = new SingleResponse<OrdenesEntity>();
+		response.setMensaje("Se elimino la orden correctamente");
+		response.setOk(true);
+		response.setResponse(opcionalOrden.get());		
+		return response;
+	}
+
+
+	@Override
+	public SingleResponse<OrdenesEntity> actualizarOrden(OrdenActualizarDTO ordenActualizar) {
+		DireccionEntity direccionCompra = direccionesServices.consultarDireccionePorId(ordenActualizar.getIdDireccion()).getResponse();
+		ResponseListarCarrito carrito = carritoCompraService.mostrarCarrito(ordenActualizar.getIdCliente()).getResponse();
+		ClienteEntity cliente = carrito.getCarrito().get(0).getCliente();
+		
+		Optional<OrdenesEntity> opcionalOrden = Optional.empty();
+		
+		try {
+			opcionalOrden = ordenRepository.findById(ordenActualizar.getIdOrden());
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al buscar el id de la orden en la BD");
+		}
+		
+		if(opcionalOrden.isEmpty()) {
+			throw new BusinessException(HttpStatus.NOT_FOUND, "Error al buscar la orden en la BD");
+		}
+		
+		OrdenesEntity nuevaOrden = opcionalOrden.get();
+		nuevaOrden.setCalle(direccionCompra.getCalle());
+		nuevaOrden.setCiudad(direccionCompra.getCiudad());
+		nuevaOrden.setCliente(cliente);
+		nuevaOrden.setCodigoPostal(direccionCompra.getCodigoPostal());
+		nuevaOrden.setColonia(direccionCompra.getColonia());
+		nuevaOrden.setEntreCalle1(direccionCompra.getEntreCalle1());
+		nuevaOrden.setEntreCalle2(direccionCompra.getEntreCalle2());
+		nuevaOrden.setEstatusOrden(EstatusOrden.NUEVO);
+		nuevaOrden.setFechaOrden(LocalDateTime.now());
+		nuevaOrden.setImpuesto(ordenActualizar.getIva());
+		nuevaOrden.setMetodoPago(ordenActualizar.getMetodoPago());
+		nuevaOrden.setNumeroExterior(direccionCompra.getNumeroExterior());
+		nuevaOrden.setNumeroInterior(direccionCompra.getNumeroInterior());
+		nuevaOrden.setSubTotal(ordenActualizar.getTotalProductos());
+		nuevaOrden.setTelefono(direccionCompra.getTelefono());
+		nuevaOrden.setTotal(ordenActualizar.getPagoTotal());
+		
+		try {
+			nuevaOrden = ordenRepository.save(nuevaOrden);
+		} catch (DataAccessException ex) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+					ex.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar la orden en la BD");
+		}
+		
+		OrdenesEntity ordenGuardada = nuevaOrden;
+		Set<OrdenDetalleEntity> detallesOrden = new HashSet<>();
+		carrito.getCarrito().forEach(carroProducto->{
+			OrdenDetalleEntity ordenDetalle = new OrdenDetalleEntity();
+			ordenDetalle.setCantidad(carroProducto.getCantidad());
+			ordenDetalle.setOrden(ordenGuardada);
+			if(carroProducto.getProducto().getPrecioOferta() != null) {
+				ordenDetalle.setPrecio(carroProducto.getProducto().getPrecioOferta());
+			}else {
+				ordenDetalle.setPrecio(carroProducto.getProducto().getPrecioVenta());
+			}
+			ordenDetalle.setProducto(carroProducto.getProducto());
+			ordenDetalle.setSubtotal(carroProducto.getSubtotal());
+			try {
+				detallesOrden.add(ordenDetalleRepository.save(ordenDetalle));
+				
+			} catch (DataAccessException ex) {
+				log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+						ex.getStackTrace());
+				throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar el datelle de la orden en la BD");
+			}
+		});
+		ordenGuardada.setOrdenDetalle(detallesOrden);
+
+		SingleResponse<OrdenesEntity> response = new SingleResponse<OrdenesEntity> ();
+		response.setMensaje("Lo orden se actualizo correctamente");
+		response.setOk(true);
+		response.setResponse(ordenGuardada);
+		return response;
+	}
+
+
+	
+	
 
 }
