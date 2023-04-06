@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mccarton.model.dto.CrearOrdenRequest;
 import com.mccarton.model.dto.OrdenActualizarDTO;
+import com.mccarton.model.dto.OrdenDetalleDTO;
 import com.mccarton.model.dto.OrdenDto;
 import com.mccarton.model.dto.SingleResponse;
+import com.mccarton.model.entity.OrdenDetalleEntity;
 import com.mccarton.model.entity.OrdenesEntity;
 import com.mccarton.service.IOrdenesService;
 
@@ -58,10 +60,25 @@ public class OrdenesController {
 		return new ResponseEntity<SingleResponse<OrdenesEntity>>(response,HttpStatus.OK);
 	}
 	
+	@PutMapping(path = "/agregarProductoOrdenDetalle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<OrdenDetalleEntity>> agregarProductoOrdenDetalle(@RequestBody OrdenDetalleDTO ordenDetalle){
+		SingleResponse<OrdenDetalleEntity> response = ordenesService.agregarProductoOrdenDetalle(ordenDetalle);
+		return new ResponseEntity<SingleResponse<OrdenDetalleEntity>>(response,HttpStatus.OK);
+	}
+	
+	@DeleteMapping(path = "/eliminarProductoOrdenDetalle",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<OrdenDetalleEntity>> eliminarProductoOrdenDetalle(@RequestParam Integer idOrden,
+			@RequestParam Integer idOrdenDetalle,@RequestParam Double iva){
+		SingleResponse<OrdenDetalleEntity> response = ordenesService.eliminarProductoOrdenDetalle(idOrden, idOrdenDetalle, iva);
+		return new ResponseEntity<SingleResponse<OrdenDetalleEntity>>(response, HttpStatus.OK);				
+	}
+	
 	@DeleteMapping(path = "/eliminarOrden",produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<OrdenesEntity>> eliminarOrden(@RequestParam Integer idOrden){
 		SingleResponse<OrdenesEntity> response = ordenesService.eliminarOrden(idOrden);
 		return new ResponseEntity<SingleResponse<OrdenesEntity>>(response,HttpStatus.OK);
 	}
+	
+	
 
 }
