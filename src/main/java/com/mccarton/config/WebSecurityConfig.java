@@ -47,8 +47,10 @@ public class WebSecurityConfig {
 	    clientJwtAuthenticationFilter.setFilterProcessesUrl("/loginCliente");
 		
 		return http
+				.cors().and()
 				.csrf().disable()
 				.authorizeRequests()
+				.antMatchers("/clientes/todos","/clientes/loginCliente").permitAll()
 				.anyRequest()
 				.authenticated()
 				.and()
@@ -58,7 +60,7 @@ public class WebSecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.addFilter(clientJwtAuthenticationFilter)
-				.addFilter(userJwtAuthenticationFilter)
+				//.addFilter(userJwtAuthenticationFilter)
 				.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
@@ -100,6 +102,8 @@ public class WebSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+	
+	
 		
 }
 
