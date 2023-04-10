@@ -44,6 +44,13 @@ public class ReseniasController {
 		return new ResponseEntity<SingleResponse<List<ReseniaEntity>>>(response,HttpStatus.OK);
 	}
 	
+//	@GetMapping(path = "/lsitarReseniasCliente/{idCliente}", produces = MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<SingleResponse<List<ReseniaEntity>>> listarReseniasCliente(@PathVariable ("idResenia") Integer idResenia){
+//		SingleResponse<List<ReseniaEntity>> response = new SingleResponse<List<ReseniaEntity>>();
+//		response = reseniaService.consultarReseniaCliente(idResenia);
+//		return new ResponseEntity<SingleResponse<List<ReseniaEntity>>>(response,HttpStatus.OK);
+//	}
+	
 	@GetMapping(path = "/lsitarReseniaId/{idResenia}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<ReseniaEntity>> listarReseniaId(@PathVariable ("idResenia") Integer idResenia){
 		SingleResponse<ReseniaEntity> response = new SingleResponse<ReseniaEntity>();
