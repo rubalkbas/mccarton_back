@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mccarton.model.dto.CrearOrdenRequest;
 import com.mccarton.model.dto.OrdenActualizarDTO;
-import com.mccarton.model.dto.OrdenDetalleDTO;
+import com.mccarton.model.dto.OrdenDetalleAgregarProductoDTO;
 import com.mccarton.model.dto.OrdenDto;
 import com.mccarton.model.dto.SingleResponse;
 import com.mccarton.model.entity.OrdenDetalleEntity;
@@ -61,7 +61,7 @@ public class OrdenesController {
 	}
 	
 	@PutMapping(path = "/agregarProductoOrdenDetalle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<OrdenDetalleEntity>> agregarProductoOrdenDetalle(@RequestBody OrdenDetalleDTO ordenDetalle){
+	public ResponseEntity<SingleResponse<OrdenDetalleEntity>> agregarProductoOrdenDetalle(@RequestBody OrdenDetalleAgregarProductoDTO ordenDetalle){
 		SingleResponse<OrdenDetalleEntity> response = ordenesService.agregarProductoOrdenDetalle(ordenDetalle);
 		return new ResponseEntity<SingleResponse<OrdenDetalleEntity>>(response,HttpStatus.OK);
 	}
