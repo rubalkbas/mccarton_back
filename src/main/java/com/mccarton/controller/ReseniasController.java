@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mccarton.model.dto.SingleResponse;
@@ -44,12 +44,17 @@ public class ReseniasController {
 		return new ResponseEntity<SingleResponse<List<ReseniaEntity>>>(response,HttpStatus.OK);
 	}
 	
-//	@GetMapping(path = "/lsitarReseniasCliente/{idCliente}", produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<SingleResponse<List<ReseniaEntity>>> listarReseniasCliente(@PathVariable ("idResenia") Integer idResenia){
-//		SingleResponse<List<ReseniaEntity>> response = new SingleResponse<List<ReseniaEntity>>();
-//		response = reseniaService.consultarReseniaCliente(idResenia);
-//		return new ResponseEntity<SingleResponse<List<ReseniaEntity>>>(response,HttpStatus.OK);
-//	}
+	@GetMapping(path = "/listarReseniasClienteProducto", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<ReseniaEntity>> listarReseniasClienteProdudcto(@RequestParam Integer idCliente, @RequestParam Integer idProducto ){
+		SingleResponse<ReseniaEntity> response = reseniaService.consultarReseniaClienteProducto(idCliente, idProducto);
+		return new ResponseEntity<SingleResponse<ReseniaEntity>>(response,HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "/listarReseniasCliente", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<List<ReseniaEntity>>> consultarReseniasCliente(@RequestParam Integer idCliente){
+		SingleResponse<List<ReseniaEntity>> response = reseniaService.consultarReseniaCliente(idCliente);
+		return new ResponseEntity<SingleResponse<List<ReseniaEntity>>>(response, HttpStatus.OK);
+	}
 	
 	@GetMapping(path = "/lsitarReseniaId/{idResenia}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<SingleResponse<ReseniaEntity>> listarReseniaId(@PathVariable ("idResenia") Integer idResenia){
