@@ -11,12 +11,15 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import net.bytebuddy.utility.RandomString;
 
 public class TokenUtils {
+	
+	static String randomCode = RandomString.make(64);
 
-	private final static String ACCESS_TOKEN_SECRET = "4qhq8LrEBfYcaRHxhdb9zURb2rf8e7Ud";
+	private final static String ACCESS_TOKEN_SECRET = randomCode;
 
-	private final static Long ACCESS_TOKEN_VALIDITY_SECONDS = 2_592_808L;
+	private final static Long ACCESS_TOKEN_VALIDITY_SECONDS = 600L;
 
 	public static String createToken(String nombre, String email) {
 

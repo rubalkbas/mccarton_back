@@ -10,6 +10,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
+
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,6 +20,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import lombok.AllArgsConstructor;
 
@@ -28,31 +34,6 @@ public class WebSecurityConfig {
 	private final ClienteDetailServiceImpl clienteDetailsService;
 	private final UsuarioDetailsServiceImpl usuarioDetailsService;
 	private final JWTAuthorizationFilter jwtAuthorizationFilter;
-
-//	@Autowired
-//	private UserDetailsService userDetailsService;
-
-//	@Override
-//	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//		auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
-//		
-//	}
-//
-////	@Bean
-////	public UserDetailsService userDetailsService() {
-////		return new UserDetailsServiceImp();
-////	}
-//	@Override
-//	protected void configure(HttpSecurity http) throws Exception {
-//		//http.authorizeRequests().anyRequest().permitAll();
-//		http.csrf().disable().authorizeRequests().anyRequest().permitAll();
-////		http.authorizeRequests().
-////		antMatchers("/usuarios").authenticated().
-////		anyRequest().permitAll().and()
-////		.formLogin();
-////		http.authorizeRequests().anyRequest().authenticated().and().httpBasic();
-//	}
-
 	
 	@Bean
 	SecurityFilterChain filterChainUser(HttpSecurity http, @Qualifier("clienteAuthManager") AuthenticationManager clienteAuthManager, @Qualifier("usuarioAuthManager") AuthenticationManager authManagerUsuario) throws Exception {
@@ -108,32 +89,18 @@ public class WebSecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 	
-//	@Bean
-//	SecurityFilterChain filterChainClient(HttpSecurity http, AuthenticationManager autManager) throws Exception {
-//		
-//				JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter();
-//				jwtAuthenticationFilter.setAuthenticationManager(autManager);
-//				jwtAuthenticationFilter.setFilterProcessesUrl("/loginCliente");
-//		
-//				return http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic().and()
-//						.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//						.addFilter(jwtAuthenticationFilter)
-//						.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class).build();
-//			}
-	
-//	@Bean
-//	UserDetailsService userDetailsService() {
-//		InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
-//		manager.createUser(User.withUsername("admin")
-//				.password(passwordEncoder().encode("admin"))
-//				.roles()
-//				.build());
-//		return manager;
-//	}
-	
-	
-
-	
+	@Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+		
 }
 
 
