@@ -5,19 +5,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.mccarton.model.dto.CarroComprasRequest;
 import com.mccarton.model.dto.CrearOrdenRequest;
+import com.mccarton.model.dto.OrdenActualizarDTO;
+import com.mccarton.model.dto.OrdenDetalleAgregarProductoDTO;
 import com.mccarton.model.dto.OrdenDto;
 import com.mccarton.model.dto.SingleResponse;
-import com.mccarton.model.entity.CarroComprasEntity;
+import com.mccarton.model.entity.OrdenDetalleEntity;
 import com.mccarton.model.entity.OrdenesEntity;
 import com.mccarton.service.IOrdenesService;
 
@@ -51,5 +54,31 @@ public class OrdenesController {
 		response = ordenesService.crearOrden(request);
 		return new ResponseEntity<>(response, HttpStatus.OK); 	 //Se crea respuesta Ok
 	}
+	@PutMapping(path = "/actualizar",produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<OrdenesEntity>> actualizarOrden(@RequestBody OrdenActualizarDTO ordenActualizar){
+		SingleResponse<OrdenesEntity> response = ordenesService.actualizarOrden(ordenActualizar);
+		return new ResponseEntity<SingleResponse<OrdenesEntity>>(response,HttpStatus.OK);
+	}
+	
+	@PutMapping(path = "/agregarProductoOrdenDetalle", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<OrdenDetalleEntity>> agregarProductoOrdenDetalle(@RequestBody OrdenDetalleAgregarProductoDTO ordenDetalle){
+		SingleResponse<OrdenDetalleEntity> response = ordenesService.agregarProductoOrdenDetalle(ordenDetalle);
+		return new ResponseEntity<SingleResponse<OrdenDetalleEntity>>(response,HttpStatus.OK);
+	}
+	
+	@DeleteMapping(path = "/eliminarProductoOrdenDetalle",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<OrdenDetalleEntity>> eliminarProductoOrdenDetalle(@RequestParam Integer idOrden,
+			@RequestParam Integer idOrdenDetalle,@RequestParam Double iva){
+		SingleResponse<OrdenDetalleEntity> response = ordenesService.eliminarProductoOrdenDetalle(idOrden, idOrdenDetalle, iva);
+		return new ResponseEntity<SingleResponse<OrdenDetalleEntity>>(response, HttpStatus.OK);				
+	}
+	
+	@DeleteMapping(path = "/eliminarOrden",produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<SingleResponse<OrdenesEntity>> eliminarOrden(@RequestParam Integer idOrden){
+		SingleResponse<OrdenesEntity> response = ordenesService.eliminarOrden(idOrden);
+		return new ResponseEntity<SingleResponse<OrdenesEntity>>(response,HttpStatus.OK);
+	}
+	
+	
 
 }

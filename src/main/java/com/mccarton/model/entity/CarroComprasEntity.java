@@ -51,7 +51,11 @@ public class CarroComprasEntity implements Serializable{
 	private ProductosEntity producto;
 	
 	@Transient
-	public double getSubtotal() {
-		return producto.getPrecioVenta() * cantidad;
+	public double getSubtotal() {		
+		if(producto.getPrecioOferta() != null) {
+			return  producto.getPrecioOferta() * cantidad;
+		}else {
+			return producto.getPrecioVenta() * cantidad;
+		}
 	}
 }

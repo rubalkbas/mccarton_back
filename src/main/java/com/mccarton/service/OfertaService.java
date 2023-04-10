@@ -69,6 +69,10 @@ public class OfertaService implements IOfertaService{
 		return nuevoListaOferta;
 		
 	}
+	private Double obtenerPrecioOfertaGuardar(Integer descuentoPorcentaje,Double precioVenta ) {				
+		Double precioConOferta = precioVenta - (precioVenta * descuentoPorcentaje / 100);		
+		return precioConOferta;
+	}
 
 	@Override
 	public SingleResponse<OfertaEntity> guardarOferta(OfertaEntity oferta, Integer idProducto) {
@@ -87,7 +91,10 @@ public class OfertaService implements IOfertaService{
  			throw new BusinessException(HttpStatus.NOT_FOUND, "El producto no existe");
 		}
 				
-		oferta.setProducto(opcionalProducto.get());
+		ProductosEntity nuevoProducto = opcionalProducto.get();
+		Double precioConOferta = obtenerPrecioOfertaGuardar(oferta.getDescuentoEnPorcentaje(),nuevoProducto.getPrecioVenta());
+		nuevoProducto.setPrecioOferta(precioConOferta);
+		oferta.setProducto(nuevoProducto);
 		oferta.setFechaFin(LocalDateTime.now());
 		oferta.setFechaInicio(LocalDateTime.now());
 
@@ -139,7 +146,10 @@ public class OfertaService implements IOfertaService{
 				
 		OfertaEntity ofertaNueva = opcionalOferta.get();
 	
-		ofertaNueva.setProducto(opcionalProducto.get());
+		ProductosEntity nuevoProducto = opcionalProducto.get();
+		Double precioConOferta = obtenerPrecioOfertaGuardar(oferta.getDescuentoEnPorcentaje(),nuevoProducto.getPrecioVenta());
+		nuevoProducto.setPrecioOferta(precioConOferta);
+		ofertaNueva.setProducto(nuevoProducto);
 		ofertaNueva.setCodigoOferta(oferta.getCodigoOferta());
 		ofertaNueva.setCondicionesOferta(oferta.getCondicionesOferta());
 		ofertaNueva.setDescripcion(oferta.getDescripcion());
@@ -149,8 +159,6 @@ public class OfertaService implements IOfertaService{
 		ofertaNueva.setFechaInicio(oferta.getFechaInicio());
 		ofertaNueva.setNumeroUso(oferta.getNumeroUso());
 		ofertaNueva.setTipoOferta(oferta.getTipoOferta());		
-		
-		
 
 		try {			
 			ofertaNueva = ofertaRepository.save(ofertaNueva);		
@@ -240,7 +248,10 @@ public class OfertaService implements IOfertaService{
 		}
 		if(!listaOfertas.isEmpty()) {
 			for (OfertaEntity ofertaEntity : listaOfertas) {
+				ProductosEntity productoNuevo = ofertaEntity.getProducto();
+				productoNuevo.setPrecioOferta(null);
 				ofertaEntity.setEstatus(0);
+				productoRepository.save(productoNuevo);
 				ofertaRepository.save(ofertaEntity);
 			}
 		}		

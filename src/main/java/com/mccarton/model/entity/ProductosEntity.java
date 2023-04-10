@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -70,6 +71,9 @@ public class ProductosEntity implements Serializable {
 	@Column(name = "PRECIO_COMPRA" , length = 6)
 	private Double precioCompra;
 	
+	@Column(name = "PRECIO_OFERTA" , length = 6)
+	private Double precioOferta;
+	
 	@Column(name = "PRECIO_VENTA" , length = 6)
 	private Double precioVenta;
 	
@@ -110,5 +114,8 @@ public class ProductosEntity implements Serializable {
 	//@JsonManagedReference
 	private CategoriasEntity categoria;
 	
+	@OneToOne(optional = true)
+	@JoinColumn(name = "ID_OFERTA")
+	private OfertaEntity oferta;
 	
 }
