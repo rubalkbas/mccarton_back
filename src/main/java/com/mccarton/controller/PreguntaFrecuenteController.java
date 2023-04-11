@@ -23,7 +23,7 @@ import com.mccarton.model.entity.PreguntaFrecuente;
 import com.mccarton.service.IPreguntaFrecuenteService;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"enctype", "Authorization"})
 @RequestMapping("/preguntaFrecuente")
 public class PreguntaFrecuenteController {
 

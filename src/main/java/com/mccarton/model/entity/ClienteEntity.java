@@ -47,9 +47,6 @@ public class ClienteEntity implements Serializable {
 	@Column(name = "CODIGO_VERIFICACION", nullable = false, length = 64)
 	private String codigoVerificacion;
 	
-	@Column(name = "TOKEN", nullable = false, length = 64)
-	private String token;
-	
 	@Column(name = "NOMBRE", nullable = false, length = 50)
 	private String nombre;
 	

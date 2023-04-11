@@ -23,7 +23,7 @@ import com.mccarton.model.dto.SingleResponse;
 import com.mccarton.model.entity.ReseniaEntity;
 import com.mccarton.service.IReseniaService;
 
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"enctype", "Authorization"})
 @RestController
 @RequestMapping("/resenias")
 public class ReseniasController {

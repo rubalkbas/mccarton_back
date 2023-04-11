@@ -19,7 +19,7 @@ import com.mccarton.model.entity.ColoresEntity;
 import com.mccarton.service.IColoresService;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"enctype", "Authorization"})
 @RequestMapping("/colores")
 public class ColoresControlller {
 	

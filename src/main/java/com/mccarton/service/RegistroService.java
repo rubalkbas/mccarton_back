@@ -122,7 +122,7 @@ public class RegistroService implements IRegistroService {
 		clienteEntity.setPassword(passwordEncoder.encode(clienteDireccion.getPassword()));
 		clienteEntity.setTelefono(clienteDireccion.getTelefono());
 		clienteEntity.setCodigoVerificacion(randomCode);
-		clienteEntity.setToken(clienteDireccion.getToken());
+	
 
 		try {
 			clienteEntity = clienteRepository.save(clienteEntity);

@@ -20,7 +20,7 @@ import com.mccarton.model.entity.OfertaEntity;
 import com.mccarton.service.IOfertaService;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"enctype", "Authorization"})
 @RequestMapping("/oferta")
 public class OfertaController {
 

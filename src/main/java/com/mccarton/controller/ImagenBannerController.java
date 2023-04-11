@@ -26,7 +26,7 @@ import com.mccarton.model.entity.ImagenBannerEntity;
 import com.mccarton.service.IImagenBannerService;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"enctype", "Authorization"})
 @RequestMapping("/imagenbanner")
 public class ImagenBannerController {
 

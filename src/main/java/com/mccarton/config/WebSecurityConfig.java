@@ -50,7 +50,9 @@ public class WebSecurityConfig {
 				.cors().and()
 				.csrf().disable()
 				.authorizeRequests()
-				.antMatchers("/clientes/todos","/clientes/loginCliente").permitAll()
+				.antMatchers("/clientes/todos","/clientes/loginCliente","/registro/cliente",
+						"/preguntaFrecuente/consultarTodosActivos","/Productos/todosEnStock",
+						"/imagenbanner/todosActivos","usuarios/nuevoUsuario").permitAll()
 				.anyRequest()
 				.authenticated()
 				.and()
@@ -60,7 +62,7 @@ public class WebSecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				.and()
 				.addFilter(clientJwtAuthenticationFilter)
-				//.addFilter(userJwtAuthenticationFilter)
+				.addFilter(userJwtAuthenticationFilter)
 				.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
 				.build();
 	}
@@ -95,7 +97,7 @@ public class WebSecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS","PUT","DELETE"));
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

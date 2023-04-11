@@ -106,7 +106,7 @@ public class ClienteService implements IClienteService {
 		clienteEntity.setNombre(clienteDireccion.getNombre());
 		clienteEntity.setPassword(passwordEncoder.encode(clienteDireccion.getPassword()));
 		clienteEntity.setTelefono(clienteDireccion.getTelefono());
-		clienteEntity.setToken(clienteDireccion.getToken());
+		
 		
 
 		try {

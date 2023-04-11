@@ -19,7 +19,7 @@ import com.mccarton.model.entity.ListaDeseosEntity;
 import com.mccarton.service.IListaDeseosService;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"enctype", "Authorization"})
 @RequestMapping("/listaDeseos")
 public class ListaDeseosController {
 
