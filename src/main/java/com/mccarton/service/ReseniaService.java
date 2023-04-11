@@ -88,13 +88,13 @@ public class ReseniaService implements IReseniaService {
 //			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los Productos en la BD");
 //		}				
 		
-		try {
-			oOrden = ordenRepository.findByClienteEstatusOrden(cliente.getIdCliente());
-		} catch (DataAccessException excepcion) {
-			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
-					excepcion.getStackTrace());
-			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar la orden en la BD");
-		}
+//		try {
+//			oOrden = ordenRepository.findByClienteEstatusOrden(cliente.getIdCliente());
+//		} catch (DataAccessException excepcion) {
+//			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+//					excepcion.getStackTrace());
+//			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar la orden en la BD");
+//		}
 		
 		if(oOrden.isEmpty()) {
 			throw new BusinessException(HttpStatus.NOT_FOUND, "No hay ordenes entregados no puedes dar una reseña");

@@ -52,7 +52,7 @@ public class WebSecurityConfig {
 				.authorizeRequests()
 				.antMatchers("/clientes/todos","/clientes/loginCliente","/registro/cliente",
 						"/preguntaFrecuente/consultarTodosActivos","/Productos/todosEnStock",
-						"/imagenbanner/todosActivos","usuarios/nuevoUsuario","/registro/confirmar").permitAll()
+						"/imagenbanner/todosActivos","usuarios/nuevoUsuario","/registro/confirmar/{idUsuario}").permitAll()
 				.anyRequest()
 				.authenticated()
 				.and()
