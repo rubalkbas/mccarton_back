@@ -54,5 +54,7 @@ public class ReseniaEntity implements Serializable{
 	@JoinColumn(name = "ID_PRODUCTO" , nullable = true)
 	//@JsonManagedReference
 	private ProductosEntity producto;
+	
+
 
 }

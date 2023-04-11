@@ -1,6 +1,8 @@
 package com.mccarton.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,11 +15,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mccarton.exceptions.BusinessException;
+import com.mccarton.model.dto.ReseniaOrdenDTO;
 import com.mccarton.model.dto.SingleResponse;
 import com.mccarton.model.entity.ClienteEntity;
+import com.mccarton.model.entity.OrdenDetalleEntity;
+import com.mccarton.model.entity.OrdenesEntity;
 import com.mccarton.model.entity.ProductosEntity;
 import com.mccarton.model.entity.ReseniaEntity;
 import com.mccarton.repository.IClienteRepository;
+import com.mccarton.repository.IOrdenRepository;
 import com.mccarton.repository.IProductoRepository;
 import com.mccarton.repository.IReseniaRepository;
 
@@ -32,6 +38,9 @@ public class ReseniaService implements IReseniaService {
 
 	@Autowired
 	IClienteRepository clienteRepository;
+	
+	@Autowired
+	IOrdenRepository ordenRepository;
 
 	private static final Logger log = LoggerFactory.getLogger(ReseniaService.class);
 
@@ -39,28 +48,88 @@ public class ReseniaService implements IReseniaService {
 
 	@Override
 	@Transactional
-	public SingleResponse<ReseniaEntity> crearResenia(ReseniaEntity resenia) {
+	public SingleResponse<ReseniaEntity> crearResenia(ReseniaOrdenDTO resenia) {
 
 		Optional<ReseniaEntity> oResenia = Optional.empty();
 		Optional<ClienteEntity> oCliente = Optional.empty();
 		Optional<ProductosEntity> oProducto = Optional.empty();
-
+		Optional<OrdenesEntity> oOrdenEntity = Optional.empty();
+		List<OrdenesEntity> oOrden = new ArrayList<OrdenesEntity>();
+		
+		
+		try {
+			oCliente = clienteRepository.findById(resenia.getIdCliente());
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
+		}
+		
+		if(oCliente.isEmpty()) {
+			throw new BusinessException(HttpStatus.NOT_FOUND, "Error al encontrar el cliente en la BD");
+		}
+				
 		try {
 			oCliente = clienteRepository.findByCorreoElectronicoIgnoreCaseAndEstatus(
-					resenia.getCliente().getCorreoElectronico(), ESTATUS_ACTIVO);
+					oCliente.get().getCorreoElectronico(), ESTATUS_ACTIVO);
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los usuarios en la BD");
 		}
-
+		
+		ClienteEntity cliente = oCliente.get();
+		
+//		try {
+//			oOrdenEntity = ordenRepository.findById(resenia.getIdOrden());
+//		} catch (DataAccessException ex) {
+//			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
+//					ex.getStackTrace());
+//			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los Productos en la BD");
+//		}				
+		
 		try {
-			oProducto = productoRepository.findById(resenia.getProducto().getIdProducto());
+			oOrden = ordenRepository.findByClienteEstatusOrden(cliente.getIdCliente());
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar la orden en la BD");
+		}
+		
+		if(oOrden.isEmpty()) {
+			throw new BusinessException(HttpStatus.NOT_FOUND, "No hay ordenes entregados no puedes dar una reseña");
+		}
+		
+		
+		List<Integer> listaIdProductos = new ArrayList<Integer>();
+		for (OrdenesEntity ordenesEntity : oOrden) {
+			for (OrdenDetalleEntity ordenesDetalle : ordenesEntity.getOrdenDetalle()) {
+				listaIdProductos.add(ordenesDetalle.getProducto().getIdProducto());
+			}
+		}
+		
+		for (Integer integer : listaIdProductos) {
+			log.info("idProductos" + integer);
+		}
+		
+		if(!listaIdProductos.contains(resenia.getIdProducto())) {
+			throw new BusinessException(HttpStatus.UNAUTHORIZED, "No puedes dar una reseña ya que no tienes una orden con ese producto");
+		}
+		
+		
+		
+		try {
+			oProducto = productoRepository.findById(resenia.getIdProducto());
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
 			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los Productos en la BD");
 		}
+		
+		if(oProducto.isEmpty()) {
+			throw new BusinessException(HttpStatus.NOT_FOUND, "No se encontro el producto");
+		}
+						
 
 		try {
 			oResenia = reseniaRepository.findByClienteProducto(oCliente.get().getIdCliente(),
@@ -76,19 +145,26 @@ public class ReseniaService implements IReseniaService {
 					"Ya existe una reseña para el " + oProducto.get().getNombreProducto());
 		}
 
-		ReseniaEntity reseniaRes = new ReseniaEntity();
+		ReseniaEntity reseniaNueva = new ReseniaEntity();
+		
+		reseniaNueva.setEncabezado(resenia.getEncabezado());
+		reseniaNueva.setComentarios(resenia.getComentarios());
+		reseniaNueva.setFecha(LocalDateTime.now());
+		reseniaNueva.setValoracion(resenia.getValoracion());
+		reseniaNueva.setCliente(cliente);
+		reseniaNueva.setProducto(oProducto.get());
 
 		try {
-			reseniaRes = reseniaRepository.save(resenia);
+			reseniaNueva = reseniaRepository.save(reseniaNueva);
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
-			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al consultar los Productos en la BD");
+			throw new BusinessException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al guardar la resenia en la BD");
 		}
 		SingleResponse<ReseniaEntity> response = new SingleResponse<>();
 		response.setOk(true);
-		response.setMensaje("Se ha guardado el producto " + oProducto.get().getNombreProducto() + " exitosamente.");
-		response.setResponse(reseniaRes);
+		response.setMensaje("Se creo la reseña con el producto " + oProducto.get().getNombreProducto() + " exitosamente.");
+		response.setResponse(reseniaNueva);
 		return response;
 	}
 

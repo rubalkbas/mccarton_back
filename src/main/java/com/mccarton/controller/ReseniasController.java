@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mccarton.model.dto.ReseniaOrdenDTO;
 import com.mccarton.model.dto.SingleResponse;
 
 import com.mccarton.model.entity.ReseniaEntity;
@@ -31,7 +32,7 @@ public class ReseniasController {
 	IReseniaService reseniaService;
 	
 	@PostMapping(path = "/crearResenia", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<SingleResponse<ReseniaEntity>> crearResenia(@RequestBody ReseniaEntity resenia){
+	public ResponseEntity<SingleResponse<ReseniaEntity>> crearResenia(@RequestBody ReseniaOrdenDTO resenia){
 		SingleResponse<ReseniaEntity> response = new SingleResponse<ReseniaEntity>();
 		response = reseniaService.crearResenia(resenia);
 		return new ResponseEntity<SingleResponse<ReseniaEntity>>(response,HttpStatus.OK);
