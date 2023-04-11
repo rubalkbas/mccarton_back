@@ -116,12 +116,12 @@ public class ReseniaService implements IReseniaService {
 	}
 
 	
-	/*@Override
-	public SingleResponse<List<ReseniaEntity>> consultarReseniaCliente(Integer idCliente) {
-		Optional<List<ReseniaEntity>> listaReseniasCliente = Optional.empty();
+	@Override
+	public SingleResponse<ReseniaEntity> consultarReseniaClienteProducto(Integer idCliente,Integer idProducto) {
+		Optional<ReseniaEntity> listaReseniasCliente = Optional.empty();
 
 		try {
-			listaReseniasCliente = reseniaRepository.findByReseniaCliente(idCliente);
+			listaReseniasCliente = reseniaRepository.findByClienteProducto(idCliente,idProducto);
 		} catch (DataAccessException ex) {
 			log.error("Ha ocurrido un error inesperado. Exception {} {}", ex.getMessage() + " " + ex,
 					ex.getStackTrace());
@@ -129,14 +129,14 @@ public class ReseniaService implements IReseniaService {
 		}
 
 		if (!listaReseniasCliente.isEmpty()) {
-			SingleResponse<List<ReseniaEntity>> response = new SingleResponse<>();
+			SingleResponse<ReseniaEntity> response = new SingleResponse<ReseniaEntity>();
 			response.setMensaje("Se ha obtenido la lista de reseñas del cliente exitosamente");
 			response.setOk(true);
 			response.setResponse(listaReseniasCliente.get());
 			return response;
 		}
-		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron registros de usuarios en la BD");
-	}*/
+		throw new BusinessException(HttpStatus.BAD_REQUEST, "No se encontraron reseñas con el cliente en la BD");
+	}
 
 	
 
@@ -249,4 +249,27 @@ public class ReseniaService implements IReseniaService {
 		return response;
 	}
 
+	@Override
+	public SingleResponse<List<ReseniaEntity>> consultarReseniaCliente(Integer idCliente) {
+		List<ReseniaEntity> listaReseniasCliente = new ArrayList<ReseniaEntity>();
+		
+		try {		
+			listaReseniasCliente = reseniaRepository.findByCliente(idCliente);			
+		} catch (DataAccessException excepcion) {
+			log.error("Ha ocurrido un error inesperado. Exception {} {}", excepcion.getMessage() + " " + excepcion,
+					excepcion.getStackTrace());
+			throw new BusinessException(HttpStatus.NOT_FOUND, "No se encontraron resenias con ese id cliente");
+		}
+		
+		SingleResponse<List<ReseniaEntity>> response = new SingleResponse<List<ReseniaEntity>>();		
+		
+		if(!listaReseniasCliente.isEmpty()) {
+			response.setMensaje("Las resenias por cliente se consultaron correctamente");
+			response.setOk(true);
+			response.setResponse(listaReseniasCliente);
+			return response;
+		}
+		throw new BusinessException(HttpStatus.NOT_FOUND, "No se encontraron resenias de ningun producto");		
+		
+	}
 }

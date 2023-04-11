@@ -10,8 +10,11 @@ import com.mccarton.model.entity.ReseniaEntity;
 
 public interface IReseniaRepository extends JpaRepository<ReseniaEntity, Integer>{
 
-	@Query("SELECT d FROM ReseniaEntity d WHERE ID_CLIENTE =:idCliente AND ID_PRODUCTO =:idProducto ")
+	@Query("SELECT r FROM ReseniaEntity r WHERE r.cliente.idCliente = :idCliente AND r.producto.idProducto = :idProducto ")
 	Optional<ReseniaEntity> findByClienteProducto(@Param("idCliente") Integer idCliente, @Param("idProducto") Integer idProducto);
+	
+	@Query("SELECT r FROM ReseniaEntity r WHERE r.cliente.idCliente = :idCliente")
+	List<ReseniaEntity> findByCliente(Integer idCliente);
 	
 //	@Query("SELECT d FROM ReseniaEntity d WHERE ID_CLIENTE =:idCliente")
 //	Optional<List<ReseniaEntity>> findByReseniaCliente(@Param("idCliente") Integer idCliente);
