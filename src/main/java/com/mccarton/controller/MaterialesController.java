@@ -22,7 +22,7 @@ import com.mccarton.model.entity.MaterialesEntity;
 import com.mccarton.service.IMaterialesService;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"enctype", "Authorization"})
 @RequestMapping("/Materiales")
 public class MaterialesController {
 	

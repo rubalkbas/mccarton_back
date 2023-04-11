@@ -28,7 +28,7 @@ import com.mccarton.model.entity.ProductosImagenEntity;
 import com.mccarton.service.IProductosImagenService;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = {"enctype", "Authorization"})
 @RequestMapping("/ProductosImg")
 public class ProductosImagenController {
 	

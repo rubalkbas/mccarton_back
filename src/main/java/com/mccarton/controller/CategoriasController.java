@@ -25,7 +25,6 @@ import com.mccarton.service.ICategoriaService;
 @CrossOrigin("*")
 @RestController
 @RequestMapping("/categorias")
-@Controller
 public class CategoriasController {
 
 	@Autowired
