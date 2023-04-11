@@ -52,7 +52,7 @@ public class WebSecurityConfig {
 				.authorizeRequests()
 				.antMatchers("/clientes/todos","/clientes/loginCliente","/registro/cliente",
 						"/preguntaFrecuente/consultarTodosActivos","/Productos/todosEnStock",
-						"/imagenbanner/todosActivos","usuarios/nuevoUsuario").permitAll()
+						"/imagenbanner/todosActivos","usuarios/nuevoUsuario","/registro/confirmar").permitAll()
 				.anyRequest()
 				.authenticated()
 				.and()
@@ -98,7 +98,7 @@ public class WebSecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "OPTIONS","PUT","DELETE"));
-        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+        configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization","enctype", "Authorization"));
         configuration.setExposedHeaders(Arrays.asList("Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
