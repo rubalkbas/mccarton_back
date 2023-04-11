@@ -1,5 +1,7 @@
 package com.mccarton.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +17,8 @@ public interface IOrdenRepository extends JpaRepository<OrdenesEntity, Integer> 
 			+ "o.colonia LIKE %?1% OR o.ciudad LIKE %?1% OR "
 			+ "o.metodoPago LIKE %?1% OR o.estatusOrden LIKE %?1%")
 	Page<OrdenesEntity> findAll(String search, Pageable pageable);
+	
+	@Query("SELECT o FROM OrdenesEntity o WHERE o.cliente.idCliente = :idCliente AND o.estatusOrden = 'ENTREGADO'")
+	List<OrdenesEntity> findByClienteEstatusOrden(Integer idCliente);
 
 }
