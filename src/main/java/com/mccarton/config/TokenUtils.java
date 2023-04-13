@@ -19,7 +19,7 @@ public class TokenUtils {
 
 	private final static String ACCESS_TOKEN_SECRET = randomCode;
 
-	private final static Long ACCESS_TOKEN_VALIDITY_SECONDS = 600L;
+	private final static Long ACCESS_TOKEN_VALIDITY_SECONDS = 900L;
 
 	public static String createToken(String nombre, String email) {
 
